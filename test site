@@ -1,0 +1,1368 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIAN // Ultimate Streamer & Gamer Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                    },
+                    colors: {
+                        dota: {
+                            main: '#E53935',
+                            dark: '#8E0000',
+                            glow: 'rgba(229, 57, 53, 0.6)'
+                        },
+                        ro: {
+                            main: '#00B0FF',
+                            gold: '#FFD700',
+                            glow: 'rgba(0, 176, 255, 0.6)'
+                        },
+                        mu: {
+                            main: '#9C27B0',
+                            wings: '#E040FB',
+                            glow: 'rgba(224, 64, 251, 0.6)'
+                        },
+                        cyber: {
+                            bg: '#06060c',
+                            card: 'rgba(16, 16, 26, 0.78)',
+                            border: 'rgba(255, 255, 255, 0.12)'
+                        }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'spin-slow': 'spin 12s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050508;
+            color: #e2e8f0;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Glitch Effect */
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip: rect(0, 0, 0, 0);
+        }
+        .glitch-text::before {
+            left: -2px;
+            text-shadow: 2px 0 #E53935;
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: 2px;
+            text-shadow: -2px 0 #00B0FF;
+            animation: glitch-anim2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip: rect(20px, 9999px, 15px, 0); }
+            20% { clip: rect(50px, 9999px, 80px, 0); }
+            40% { clip: rect(10px, 9999px, 40px, 0); }
+            60% { clip: rect(70px, 9999px, 20px, 0); }
+            80% { clip: rect(30px, 9999px, 60px, 0); }
+            100% { clip: rect(90px, 9999px, 10px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(80px, 9999px, 10px, 0); }
+            40% { clip: rect(30px, 9999px, 50px, 0); }
+            60% { clip: rect(90px, 9999px, 30px, 0); }
+            80% { clip: rect(20px, 9999px, 70px, 0); }
+            100% { clip: rect(60px, 9999px, 40px, 0); }
+        }
+
+        /* Glassmorphism Styling */
+        .glass-card {
+            background: rgba(15, 15, 25, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050508;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #252538;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E53935;
+        }
+
+        /* Tab Activation active state */
+        .game-tab.active-dota {
+            border-bottom: 3px solid #E53935;
+            color: #E53935;
+            background: rgba(229, 57, 53, 0.12);
+        }
+        .game-tab.active-ro {
+            border-bottom: 3px solid #00B0FF;
+            color: #00B0FF;
+            background: rgba(0, 176, 255, 0.12);
+        }
+        .game-tab.active-mu {
+            border-bottom: 3px solid #E040FB;
+            color: #E040FB;
+            background: rgba(224, 64, 251, 0.12);
+        }
+
+        canvas#particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Poring click animation floating text */
+        .damage-number {
+            position: absolute;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 800;
+            color: #FFD700;
+            text-shadow: 0 0 8px #FF8C00, 2px 2px 0 #000;
+            pointer-events: none;
+            animation: floatAndFade 0.8s ease-out forwards;
+        }
+
+        @keyframes floatAndFade {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            50% { opacity: 0.9; transform: translateY(-25px) scale(1.3); }
+            100% { opacity: 0; transform: translateY(-50px) scale(0.8); }
+        }
+    </style>
+</head>
+<body class="relative min-h-screen text-gray-200 antialiased selection:bg-red-600 selection:text-white">
+
+    <!-- CANVAS BACKGROUND FOR ANIMATED SPRITES, HEROES, RUNES & DAMAGENumbers -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- TOP NAVIGATION BAR -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-card border-b border-gray-800/80 px-4 py-3 md:px-8">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <!-- Logo -->
+            <a href="#" class="flex items-center space-x-3 group" onclick="playAudio('click')">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-600 via-purple-600 to-cyan-500 flex items-center justify-center font-orbitron font-black text-xl text-white shadow-lg shadow-red-900/40 group-hover:scale-105 transition-transform">
+                    G
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-orbitron font-bold text-lg text-white tracking-wider flex items-center gap-2">
+                        GIAN <span class="text-xs font-normal text-red-500 bg-red-950/60 px-1.5 py-0.5 rounded border border-red-800/50">PRO STREAMER</span>
+                    </span>
+                    <span class="text-xs text-gray-400 font-mono">@sepiscooking</span>
+                </div>
+            </a>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center space-x-8 font-orbitron text-sm tracking-widest text-gray-300">
+                <a href="#about" class="hover:text-red-400 transition-colors" onclick="playAudio('click')">HOME</a>
+                <a href="#tiktok" class="hover:text-pink-400 transition-colors" onclick="playAudio('click')">TIKTOK LIVE</a>
+                <a href="#games" class="hover:text-cyan-400 transition-colors" onclick="playAudio('click')">GAMES & SIMS</a>
+                <a href="#schedule" class="hover:text-purple-400 transition-colors" onclick="playAudio('click')">SCHEDULE</a>
+                <a href="#highlights" class="hover:text-red-400 transition-colors" onclick="playAudio('click')">CLIPS</a>
+            </div>
+
+            <!-- Controls (Audio + Synth Music) -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Sound Effects Toggle -->
+                <button id="soundToggleBtn" onclick="toggleAudio()" class="p-2 sm:px-3 sm:py-2 rounded-lg bg-gray-900/80 border border-gray-700 text-gray-300 hover:text-white hover:border-gray-500 transition-all text-xs font-mono flex items-center gap-1.5" title="Toggle SFX">
+                    <i id="soundIcon" class="fas fa-volume-up text-red-400"></i>
+                    <span class="hidden sm:inline">SFX</span>
+                </button>
+
+                <!-- Synth BGM Toggle -->
+                <button id="bgmToggleBtn" onclick="toggleBGM()" class="p-2 sm:px-3 sm:py-2 rounded-lg bg-gray-900/80 border border-purple-800/60 text-purple-300 hover:border-purple-500 transition-all text-xs font-mono flex items-center gap-1.5" title="Toggle Synth Music">
+                    <i id="bgmIcon" class="fas fa-music text-purple-400"></i>
+                    <span class="hidden sm:inline">BGM</span>
+                </button>
+
+                <!-- TikTok Profile Button -->
+                <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener noreferrer" onclick="playAudio('click')" class="relative inline-flex items-center justify-center p-0.5 overflow-hidden text-xs font-bold font-orbitron rounded-lg group bg-gradient-to-br from-pink-500 via-red-500 to-cyan-400 group-hover:from-pink-500 group-hover:to-cyan-400 hover:text-white text-white shadow-lg shadow-pink-500/20">
+                    <span class="relative px-3 py-2 sm:px-4 sm:py-2 transition-all ease-in duration-75 bg-gray-950 rounded-md group-hover:bg-opacity-0 flex items-center gap-2">
+                        <i class="fab fa-tiktok text-sm"></i>
+                        <span class="hidden sm:inline">TIKTOK</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BACKGROUND THEME SWITCHER BAR -->
+    <div class="fixed top-20 right-4 z-40 hidden sm:flex flex-col gap-2 glass-card p-2 rounded-xl border border-gray-800 shadow-2xl">
+        <span class="text-[10px] font-mono text-gray-400 text-center uppercase tracking-wider">BG CANVAS</span>
+        <button onclick="setBgTheme('all')" id="bgBtn-all" class="px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-gray-800 text-white border border-gray-600 transition-all hover:scale-105" title="All Games Mixed">
+            🌀 ALL
+        </button>
+        <button onclick="setBgTheme('dota')" id="bgBtn-dota" class="px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-red-950/60 text-red-300 border border-red-800/60 transition-all hover:scale-105" title="Dota 2 Chaos">
+            ⚔️ DOTA 2
+        </button>
+        <button onclick="setBgTheme('ro')" id="bgBtn-ro" class="px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-cyan-950/60 text-cyan-300 border border-cyan-800/60 transition-all hover:scale-105" title="Ragnarok Fantasy">
+            🏰 RO
+        </button>
+        <button onclick="setBgTheme('mu')" id="bgBtn-mu" class="px-2.5 py-1.5 rounded text-xs font-mono font-bold bg-purple-950/60 text-purple-300 border border-purple-800/60 transition-all hover:scale-105" title="MU Dark Kundun">
+            🐉 MU
+        </button>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="relative z-10 pt-24 space-y-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- HERO SECTION -->
+        <section id="about" class="relative min-h-[85vh] flex items-center justify-center pt-4">
+            <div class="w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Hero Left: Bio & Branding -->
+                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+                    <!-- Live Status Badge -->
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card border border-pink-500/40 text-xs font-mono">
+                        <span class="relative flex h-2.5 w-2.5">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-500"></span>
+                        </span>
+                        <span class="text-gray-200 tracking-wider">OFFICIAL STREAMER // <strong class="text-pink-400">TIKTOK LIVE</strong></span>
+                    </div>
+
+                    <!-- Main Name Banner -->
+                    <div class="space-y-2">
+                        <h1 class="text-6xl sm:text-7xl lg:text-8xl font-black font-orbitron tracking-tight text-white leading-none">
+                            I'M <span class="glitch-text text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-cyan-400 to-purple-500" data-text="GIAN">GIAN</span>
+                        </h1>
+                        <p class="text-xl sm:text-2xl font-semibold text-gray-300 font-orbitron flex flex-wrap justify-center lg:justify-start items-center gap-3">
+                            <span class="text-red-500">DOTA 2</span> 
+                            <span class="text-gray-600">•</span> 
+                            <span class="text-cyan-400">RAGNAROK ONLINE</span> 
+                            <span class="text-gray-600">•</span> 
+                            <span class="text-purple-400">MU ONLINE</span>
+                        </p>
+                    </div>
+
+                    <!-- Intro Tagline -->
+                    <p class="text-gray-400 text-base sm:text-lg max-w-2xl leading-relaxed">
+                        Welcome to my gaming domain! I am a competitive streamer & PC player. Watch me invoke 10-spell combos in Dota 2, hunt MVP bosses in Ragnarok, and upgrade +15 Wings in MU Online live on TikTok <strong class="text-pink-400">@sepiscooking</strong>!
+                    </p>
+
+                    <!-- Quick CTA Buttons -->
+                    <div class="flex flex-wrap gap-4 pt-2 justify-center lg:justify-start">
+                        <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="px-6 py-3.5 rounded-xl font-orbitron font-bold text-sm bg-gradient-to-r from-pink-600 via-red-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white shadow-xl shadow-pink-600/30 transition-all transform hover:-translate-y-0.5 flex items-center gap-3">
+                            <i class="fab fa-tiktok text-lg"></i>
+                            <span>WATCH STREAM @sepiscooking</span>
+                        </a>
+                        <a href="#games" onclick="playAudio('click')" class="px-6 py-3.5 rounded-xl font-orbitron font-bold text-sm glass-card border border-gray-700 hover:border-gray-500 text-gray-200 hover:text-white transition-all flex items-center gap-2">
+                            <i class="fas fa-gamepad text-cyan-400"></i>
+                            <span>PLAY INTERACTIVE SIMS</span>
+                        </a>
+                    </div>
+
+                    <!-- Live Stats Ribbon -->
+                    <div class="pt-4 grid grid-cols-3 gap-3 border-t border-gray-800/80 max-w-lg mx-auto lg:mx-0">
+                        <div class="glass-card p-3 rounded-lg text-center">
+                            <div class="text-[10px] text-gray-400 uppercase font-mono">Dota MMR</div>
+                            <div class="text-lg font-bold font-orbitron text-red-400">6,850+</div>
+                        </div>
+                        <div class="glass-card p-3 rounded-lg text-center">
+                            <div class="text-[10px] text-gray-400 uppercase font-mono">RO MVP Kills</div>
+                            <div class="text-lg font-bold font-orbitron text-cyan-400">2,400+</div>
+                        </div>
+                        <div class="glass-card p-3 rounded-lg text-center">
+                            <div class="text-[10px] text-gray-400 uppercase font-mono">MU Resets</div>
+                            <div class="text-lg font-bold font-orbitron text-purple-400">999+ GR</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hero Right: PORING CLICKER MINI-GAME CARD -->
+                <div class="lg:col-span-5 flex justify-center relative">
+                    <div class="w-full max-w-md glass-card p-6 rounded-2xl border border-gray-700/60 shadow-2xl space-y-5 text-center relative overflow-hidden">
+                        
+                        <!-- Poring Clicker Header -->
+                        <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+                            <span class="text-xs font-mono text-cyan-400 flex items-center gap-1.5">
+                                <i class="fas fa-gamepad"></i> PORING CLICKER
+                            </span>
+                            <span class="text-xs font-mono text-yellow-400 bg-yellow-950/60 px-2 py-0.5 rounded border border-yellow-800/50">
+                                Level: <strong id="poringLevel">1</strong>
+                            </span>
+                        </div>
+
+                        <!-- Interactive Poring Entity -->
+                        <div class="relative py-4 flex flex-col items-center justify-center cursor-pointer select-none group" id="poringContainer" onclick="clickPoring(event)">
+                            <!-- SVG Animated Poring Mascot -->
+                            <div id="poringMascot" class="w-32 h-32 relative transition-transform active:scale-95 duration-75">
+                                <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-[0_0_15px_rgba(255,105,180,0.6)]">
+                                    <!-- Pink Poring Body -->
+                                    <ellipse cx="50" cy="55" rx="42" ry="36" fill="#FF69B4" />
+                                    <!-- Body Highlight -->
+                                    <ellipse cx="38" cy="32" rx="14" ry="8" fill="#FFB6C1" opacity="0.6" transform="rotate(-20 38 32)" />
+                                    <!-- Eyes -->
+                                    <circle cx="36" cy="52" r="5" fill="#111" />
+                                    <circle cx="64" cy="52" r="5" fill="#111" />
+                                    <circle cx="38" cy="50" r="2" fill="#fff" />
+                                    <circle cx="66" cy="50" r="2" fill="#fff" />
+                                    <!-- Mouth -->
+                                    <path d="M 44 64 Q 50 70 56 64" stroke="#111" stroke-width="2.5" fill="none" />
+                                    <!-- Blush -->
+                                    <circle cx="26" cy="58" r="4" fill="#FF1493" opacity="0.5" />
+                                    <circle cx="74" cy="58" r="4" fill="#FF1493" opacity="0.5" />
+                                </svg>
+                            </div>
+                            <span class="text-xs text-gray-400 mt-2 font-mono group-hover:text-pink-300">CLICK PORING TO FARM EXP!</span>
+                        </div>
+
+                        <!-- EXP Bar -->
+                        <div class="space-y-1 text-xs font-mono">
+                            <div class="flex justify-between text-gray-300">
+                                <span>EXP Progress:</span>
+                                <span class="text-yellow-400 font-bold" id="expText">0 / 100</span>
+                            </div>
+                            <div class="w-full bg-gray-900 h-2.5 rounded-full overflow-hidden border border-gray-800">
+                                <div id="expBar" class="bg-gradient-to-r from-pink-500 to-yellow-400 h-full w-[0%] transition-all duration-200"></div>
+                            </div>
+                        </div>
+
+                        <!-- Click Stats -->
+                        <div class="grid grid-cols-2 gap-2 text-xs font-mono text-gray-300 bg-gray-950 p-2.5 rounded-lg border border-gray-800">
+                            <div>Total Clicks: <strong id="totalClicks" class="text-pink-400">0</strong></div>
+                            <div>Zeny Earned: <strong id="zenyEarned" class="text-yellow-400">0 Z</strong></div>
+                        </div>
+
+                        <!-- Level Up Sound & Special Reward Badge -->
+                        <div id="levelUpBanner" class="hidden text-xs font-orbitron font-bold text-emerald-400 bg-emerald-950/80 p-2 rounded border border-emerald-500 animate-pulse">
+                            🎉 LEVEL UP! +100 Zeny & Stat Point Added!
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- TIKTOK STREAM & EMBED SECTION -->
+        <section id="tiktok" class="space-y-6">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono tracking-widest text-pink-500 uppercase">// STREAM BROADCAST HUB</span>
+                <h2 class="text-3xl sm:text-4xl font-black font-orbitron text-white">
+                    TIKTOK LIVE <span class="text-pink-500">@SEPISCOOKING</span>
+                </h2>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                    Join Gian live for Dota 2 rank pushes, Ragnarok War of Emperium, and MU Online Chaos Machine gamble streams!
+                </p>
+            </div>
+
+            <!-- Streaming Card Container -->
+            <div class="glass-card rounded-2xl p-6 border border-gray-800 relative overflow-hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <!-- Simulated Live Stream Screen -->
+                    <div class="lg:col-span-7 bg-gray-950 rounded-xl overflow-hidden border border-gray-800 relative aspect-video flex flex-col justify-between p-4 bg-cover bg-center" style="background-image: linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.92)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop');">
+                        
+                        <!-- Top Overlay -->
+                        <div class="flex items-center justify-between z-10">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-red-600 text-white text-xs font-mono font-bold px-2.5 py-1 rounded flex items-center gap-1.5 animate-pulse">
+                                    <span class="w-2 h-2 rounded-full bg-white"></span> LIVE STREAM
+                                </span>
+                                <span class="bg-black/70 text-gray-200 text-xs font-mono px-2.5 py-1 rounded backdrop-blur-sm border border-gray-700">
+                                    <i class="fas fa-eye text-cyan-400 mr-1"></i> <span id="simulatedViewers">1,420</span> Viewers
+                                </span>
+                            </div>
+
+                            <span class="bg-black/70 text-pink-400 text-xs font-mono px-3 py-1 rounded backdrop-blur-sm border border-pink-500/40">
+                                TikTok Live
+                            </span>
+                        </div>
+
+                        <!-- Center Stream Play Button -->
+                        <div class="text-center z-10 my-auto space-y-3">
+                            <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener noreferrer" class="inline-block w-16 h-16 rounded-full bg-pink-600/90 hover:bg-pink-500 flex items-center justify-center text-3xl text-white shadow-xl shadow-pink-500/50 cursor-pointer hover:scale-110 transition-transform">
+                                <i class="fas fa-play ml-1"></i>
+                            </a>
+                            <h3 class="font-orbitron text-xl font-bold text-white shadow-black drop-shadow-md">
+                                GIAN IS LIVE ON TIKTOK!
+                            </h3>
+                            <p class="text-xs text-gray-300 font-mono">
+                                Streaming Dota 2 Mid Invoker / Ragnarok MVP Boss Raid / MU +15 Wings
+                            </p>
+                        </div>
+
+                        <!-- Bottom Bar -->
+                        <div class="flex flex-wrap items-center justify-between gap-2 z-10 pt-2 border-t border-gray-800/80">
+                            <span class="text-xs text-gray-300 font-mono">Streamer: <strong class="text-white">Gian (@sepiscooking)</strong></span>
+                            <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="text-xs font-mono font-bold text-pink-400 hover:text-pink-300 flex items-center gap-1">
+                                Open TikTok App <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+
+                    </div>
+
+                    <!-- TikTok Profile Card & Follower Stats -->
+                    <div class="lg:col-span-5 space-y-6">
+                        <div class="glass-card p-6 rounded-xl border border-pink-500/20 bg-gradient-to-b from-gray-900/90 to-gray-950 space-y-4">
+                            
+                            <div class="flex items-center space-x-4">
+                                <div class="w-14 h-14 rounded-full border-2 border-pink-500 bg-gray-800 flex items-center justify-center text-2xl text-pink-400">
+                                    <i class="fab fa-tiktok"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-orbitron font-bold text-lg text-white">@sepiscooking</h4>
+                                    <p class="text-xs text-gray-400">Gian's Official Gaming Account</p>
+                                </div>
+                            </div>
+
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Follow Gian on TikTok to get notified whenever he streams Dota 2 ranked matches, Ragnarok Guild Wars, and MU Online boss raids!
+                            </p>
+
+                            <!-- Social Counter Stat Grid -->
+                            <div class="grid grid-cols-2 gap-3 font-mono text-center">
+                                <div class="p-3 bg-gray-900/80 rounded-lg border border-gray-800">
+                                    <div class="text-xl font-bold font-orbitron text-pink-400">TikTok</div>
+                                    <div class="text-[10px] text-gray-400 uppercase">Primary Platform</div>
+                                </div>
+                                <div class="p-3 bg-gray-900/80 rounded-lg border border-gray-800">
+                                    <div class="text-xl font-bold font-orbitron text-cyan-400">DAILY</div>
+                                    <div class="text-[10px] text-gray-400 uppercase">Live Stream Schedule</div>
+                                </div>
+                            </div>
+
+                            <!-- Big TikTok Follow Button -->
+                            <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" onclick="playAudio('click')" class="w-full py-3.5 rounded-xl font-orbitron font-bold text-sm bg-gradient-to-r from-pink-600 to-red-600 hover:from-pink-500 hover:to-red-500 text-white shadow-lg shadow-pink-600/30 flex items-center justify-center gap-3 transition-all">
+                                <i class="fab fa-tiktok text-xl"></i>
+                                <span>FOLLOW @SEPISCOOKING</span>
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- GAMES, SIMULATORS & INTERACTIVE SECTION -->
+        <section id="games" class="space-y-8">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono tracking-widest text-cyan-400 uppercase">// GAME SPECIFIC SIMULATORS & SOUNDBOARDS</span>
+                <h2 class="text-3xl sm:text-4xl font-black font-orbitron text-white">
+                    GIAN'S GAME SHOWCASE
+                </h2>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                    Select a game below to trigger hero sound effects, simulate Ragnarok stat allocations, or upgrade gear in the MU Chaos Goblin Machine!
+                </p>
+            </div>
+
+            <!-- Game Switcher Tabs -->
+            <div class="flex justify-center border-b border-gray-800 max-w-2xl mx-auto font-orbitron font-bold text-sm sm:text-base">
+                <button onclick="switchGameTab('dota')" id="tab-dota" class="game-tab active-dota flex-1 py-3 px-4 text-center transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-shield-cat text-red-500"></i>
+                    <span>DOTA 2</span>
+                </button>
+                <button onclick="switchGameTab('ro')" id="tab-ro" class="game-tab flex-1 py-3 px-4 text-center text-gray-400 hover:text-cyan-400 transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-hat-wizard text-cyan-400"></i>
+                    <span>RAGNAROK</span>
+                </button>
+                <button onclick="switchGameTab('mu')" id="tab-mu" class="game-tab flex-1 py-3 px-4 text-center text-gray-400 hover:text-purple-400 transition-all flex items-center justify-center gap-2">
+                    <i class="fas fa-dragon text-purple-400"></i>
+                    <span>MU ONLINE</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: DOTA 2 SPELL & HERO SOUNDBOARD SHOWCASE -->
+            <div id="content-dota" class="space-y-8">
+                <!-- Dota Header Banner -->
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-red-600 bg-gradient-to-r from-red-950/20 to-gray-950">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                        <div>
+                            <span class="text-xs font-mono text-red-500">POS 1 / POS 2 MAIN</span>
+                            <h3 class="text-2xl font-black font-orbitron text-white">DOTA 2 HERO SOUNDBOARD</h3>
+                            <p class="text-xs text-gray-400 mt-1">Click spells below to hear Web Audio synthesized spell cast SFX!</p>
+                        </div>
+                        <div class="text-center bg-gray-900/80 p-4 rounded-xl border border-red-900/40">
+                            <div class="text-xs text-gray-400 font-mono">RANK BADGE</div>
+                            <div class="text-2xl font-black font-orbitron text-red-400 tracking-wider flex items-center justify-center gap-2 mt-1">
+                                <i class="fas fa-crown text-yellow-500"></i> DIVINE / IMMORTAL
+                            </div>
+                            <div class="text-xs text-gray-400 font-mono mt-1">MMR: <span class="text-white font-bold">6,850+</span></div>
+                        </div>
+                        <div class="space-y-2 text-xs font-mono">
+                            <div class="flex justify-between text-gray-300">
+                                <span>Win Rate:</span> <span class="text-green-400 font-bold">58.4%</span>
+                            </div>
+                            <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-green-500 h-full w-[58%]"></div>
+                            </div>
+                            <div class="flex justify-between text-gray-400">
+                                <span>Versatility: 9.2</span>
+                                <span>First Blood Rate: 34%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dota Signature Heroes Cards with Spell SFX Buttons -->
+                <div>
+                    <h4 class="font-orbitron font-bold text-lg text-red-400 mb-4 flex items-center gap-2">
+                        <i class="fas fa-fire"></i> GIAN'S HERO SPELL BOARD
+                    </h4>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- Hero 1: Invoker -->
+                        <div class="glass-card rounded-xl p-5 border border-red-900/30 hover:border-red-500/60 transition-all space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-lg bg-yellow-600/30 border border-yellow-500/50 flex items-center justify-center text-yellow-400 text-2xl font-orbitron font-black">
+                                    I
+                                </div>
+                                <div>
+                                    <h5 class="font-orbitron font-bold text-white text-lg">INVOKER</h5>
+                                    <span class="text-xs text-yellow-400 font-mono">Mid Lane • 10 Spells</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-300">Test Invoker spell cast effects:</p>
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                                <button onclick="playSpellSFX('sunstrike')" class="p-2 bg-yellow-950/60 hover:bg-yellow-800 border border-yellow-700/60 rounded text-yellow-300 transition-all">
+                                    ☀️ Sunstrike
+                                </button>
+                                <button onclick="playSpellSFX('meteor')" class="p-2 bg-orange-950/60 hover:bg-orange-800 border border-orange-700/60 rounded text-orange-300 transition-all">
+                                    ☄️ Meteor
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hero 2: Shadow Fiend -->
+                        <div class="glass-card rounded-xl p-5 border border-red-900/30 hover:border-red-500/60 transition-all space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-lg bg-red-900/50 border border-red-600/50 flex items-center justify-center text-red-500 text-2xl font-orbitron font-black">
+                                    SF
+                                </div>
+                                <div>
+                                    <h5 class="font-orbitron font-bold text-white text-lg">SHADOW FIEND</h5>
+                                    <span class="text-xs text-red-400 font-mono">Mid / Carry • Burst</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-300">Test Shadow Fiend spell cast effects:</p>
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                                <button onclick="playSpellSFX('raze')" class="p-2 bg-red-950/60 hover:bg-red-800 border border-red-700/60 rounded text-red-300 transition-all">
+                                    💥 Shadowraze
+                                </button>
+                                <button onclick="playSpellSFX('requiem')" class="p-2 bg-purple-950/60 hover:bg-purple-800 border border-purple-700/60 rounded text-purple-300 transition-all">
+                                    💀 Requiem
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Hero 3: Pudge -->
+                        <div class="glass-card rounded-xl p-5 border border-red-900/30 hover:border-red-500/60 transition-all space-y-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-lg bg-emerald-900/50 border border-emerald-600/50 flex items-center justify-center text-emerald-400 text-2xl font-orbitron font-black">
+                                    P
+                                </div>
+                                <div>
+                                    <h5 class="font-orbitron font-bold text-white text-lg">PUDGE</h5>
+                                    <span class="text-xs text-emerald-400 font-mono">Pos 2 / Pos 4 • Hook</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-300">Test Pudge spell cast effects:</p>
+                            <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                                <button onclick="playSpellSFX('hook')" class="p-2 bg-emerald-950/60 hover:bg-emerald-800 border border-emerald-700/60 rounded text-emerald-300 transition-all">
+                                    🪝 Meat Hook
+                                </button>
+                                <button onclick="playSpellSFX('dismember')" class="p-2 bg-green-950/60 hover:bg-green-800 border border-green-700/60 rounded text-green-300 transition-all">
+                                    🥩 Dismember
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: RAGNAROK STAT ALLOCATION SIMULATOR -->
+            <div id="content-ro" class="space-y-8 hidden">
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-cyan-500 bg-gradient-to-r from-cyan-950/20 to-gray-950 space-y-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <span class="text-xs font-mono text-cyan-400">CHARACTER BUILDER</span>
+                            <h3 class="text-2xl font-black font-orbitron text-white">RO ASSASSIN CROSS STAT SIMULATOR</h3>
+                            <p class="text-xs text-gray-400 mt-1">Adjust sliders to calculate ASPD, ATK, and Critical rate for Gian's build!</p>
+                        </div>
+                        <div class="bg-gray-900 p-3 rounded-lg border border-cyan-800 text-right font-mono text-xs">
+                            <div>Remaining Points: <strong id="roPoints" class="text-yellow-400">48</strong></div>
+                            <div>Max Level: <strong class="text-cyan-300">99 / 70 Trans</strong></div>
+                        </div>
+                    </div>
+
+                    <!-- Sliders Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono text-xs">
+                        <!-- STR -->
+                        <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-red-400 font-bold">STR (Strength)</span>
+                                <span id="strVal" class="text-white font-bold">90</span>
+                            </div>
+                            <input type="range" min="1" max="99" value="90" class="w-full accent-red-500" oninput="updateRoStats()" id="strSlider">
+                            <span class="text-[10px] text-gray-500 block">Increases Physical Attack (ATK)</span>
+                        </div>
+
+                        <!-- AGI -->
+                        <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-cyan-400 font-bold">AGI (Agility)</span>
+                                <span id="agiVal" class="text-white font-bold">85</span>
+                            </div>
+                            <input type="range" min="1" max="99" value="85" class="w-full accent-cyan-400" oninput="updateRoStats()" id="agiSlider">
+                            <span class="text-[10px] text-gray-500 block">Increases Attack Speed (ASPD) & FLEE</span>
+                        </div>
+
+                        <!-- DEX -->
+                        <div class="bg-gray-950 p-4 rounded-xl border border-gray-800 space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-yellow-400 font-bold">DEX (Dexterity)</span>
+                                <span id="dexVal" class="text-white font-bold">50</span>
+                            </div>
+                            <input type="range" min="1" max="99" value="50" class="w-full accent-yellow-400" oninput="updateRoStats()" id="dexSlider">
+                            <span class="text-[10px] text-gray-500 block">Increases HIT & Reduces Cast Time</span>
+                        </div>
+                    </div>
+
+                    <!-- Calculated Output Stats -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center font-mono">
+                        <div class="p-3 bg-gray-900/90 rounded-lg border border-cyan-900">
+                            <div class="text-[10px] text-gray-400">CALCULATED ATK</div>
+                            <div class="text-xl font-bold font-orbitron text-red-400" id="calcAtk">540 + 120</div>
+                        </div>
+                        <div class="p-3 bg-gray-900/90 rounded-lg border border-cyan-900">
+                            <div class="text-[10px] text-gray-400">ATTACK SPEED</div>
+                            <div class="text-xl font-bold font-orbitron text-cyan-400" id="calcAspd">188.5</div>
+                        </div>
+                        <div class="p-3 bg-gray-900/90 rounded-lg border border-cyan-900">
+                            <div class="text-[10px] text-gray-400">CRITICAL RATE</div>
+                            <div class="text-xl font-bold font-orbitron text-yellow-400" id="calcCrit">68%</div>
+                        </div>
+                        <div class="p-3 bg-gray-900/90 rounded-lg border border-cyan-900">
+                            <div class="text-[10px] text-gray-400">FLEE RATE</div>
+                            <div class="text-xl font-bold font-orbitron text-emerald-400" id="calcFlee">245 + 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: MU ONLINE CHAOS MACHINE COMBINATION SIMULATOR -->
+            <div id="content-mu" class="space-y-8 hidden">
+                <div class="glass-card p-6 rounded-2xl border-l-4 border-purple-500 bg-gradient-to-r from-purple-950/20 to-gray-950 space-y-6">
+                    <div class="text-center space-y-2">
+                        <span class="text-xs font-mono text-purple-400">NORIA CHAOS GOBLIN MACHINE</span>
+                        <h3 class="text-2xl font-black font-orbitron text-white">+15 WINGS CHAOS COMBINATION SIMULATOR</h3>
+                        <p class="text-xs text-gray-400 max-w-md mx-auto">
+                            Test your luck in Gian's Chaos Machine! Try upgrading Wings of Dragon from +10 to +15.
+                        </p>
+                    </div>
+
+                    <!-- Machine Screen -->
+                    <div class="max-w-md mx-auto glass-card p-6 rounded-xl border border-purple-500/40 text-center space-y-4 relative overflow-hidden">
+                        
+                        <!-- Item Display Icon -->
+                        <div class="w-24 h-24 mx-auto rounded-full bg-purple-950/80 border-2 border-purple-500 flex items-center justify-center text-4xl text-purple-300 shadow-2xl shadow-purple-500/50" id="chaosItemBox">
+                            <i class="fas fa-feather animate-pulse"></i>
+                        </div>
+
+                        <div class="space-y-1">
+                            <h4 class="font-orbitron font-bold text-xl text-white" id="chaosItemTitle">+10 Wings of Dragon</h4>
+                            <p class="text-xs font-mono text-purple-300">Success Rate: <strong id="chaosSuccessRate" class="text-yellow-400">75%</strong></p>
+                        </div>
+
+                        <!-- Status Message Display -->
+                        <div id="chaosMachineMsg" class="p-2 text-xs font-mono bg-gray-950 rounded border border-gray-800 text-gray-300 min-h-[36px] flex items-center justify-center">
+                            Insert Chaos Jewel & Jewels of Soul to begin upgrade!
+                        </div>
+
+                        <!-- Upgrade Action Buttons -->
+                        <div class="flex gap-3 pt-2">
+                            <button onclick="combineChaosMachine()" class="flex-1 py-3 rounded-lg font-orbitron font-bold text-xs bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-600/30 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-bolt"></i>
+                                <span>UPGRADE ITEM</span>
+                            </button>
+                            <button onclick="resetChaosMachine()" class="px-4 py-3 rounded-lg font-orbitron font-bold text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 transition-all">
+                                RESET
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- STREAMING SCHEDULE & HIGHLIGHTS GALLERY -->
+        <section id="schedule" class="space-y-8">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-mono tracking-widest text-purple-400 uppercase">// STREAM TIMES & HIGHLIGHTS</span>
+                <h2 class="text-3xl sm:text-4xl font-black font-orbitron text-white">
+                    LIVE SCHEDULE & CLIPS
+                </h2>
+                <p class="text-gray-400 text-sm max-w-xl mx-auto">
+                    Check out when Gian streams on TikTok and watch featured gaming highlight moments!
+                </p>
+            </div>
+
+            <!-- Schedule Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Dota Day -->
+                <div class="glass-card p-6 rounded-xl border border-red-900/30 hover:border-red-500/50 transition-all space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-mono text-red-400">MON / WED / FRI</span>
+                        <span class="px-2 py-0.5 rounded bg-red-950 text-red-300 text-[10px] font-mono border border-red-800">8:00 PM PST</span>
+                    </div>
+                    <h3 class="font-orbitron font-bold text-lg text-white">DOTA 2 RANKED PUSH</h3>
+                    <p class="text-xs text-gray-300">High-tier ranked lobby matches, viewer party games, and Invoker combos on TikTok Live.</p>
+                </div>
+
+                <!-- RO Day -->
+                <div class="glass-card p-6 rounded-xl border border-cyan-900/30 hover:border-cyan-500/50 transition-all space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-mono text-cyan-400">TUE / THU</span>
+                        <span class="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 text-[10px] font-mono border border-cyan-800">7:30 PM PST</span>
+                    </div>
+                    <h3 class="font-orbitron font-bold text-lg text-white">RAGNAROK MVP & WOE</h3>
+                    <p class="text-xs text-gray-300">Boss hunting in Abyss Lakes/Geffenia and intense War of Emperium castle raiding.</p>
+                </div>
+
+                <!-- MU Day -->
+                <div class="glass-card p-6 rounded-xl border border-purple-900/30 hover:border-purple-500/50 transition-all space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-mono text-purple-400">SAT / SUN</span>
+                        <span class="px-2 py-0.5 rounded bg-purple-950 text-purple-300 text-[10px] font-mono border border-purple-800">9:00 PM PST</span>
+                    </div>
+                    <h3 class="font-orbitron font-bold text-lg text-white">MU ONLINE SIEGE & GRIND</h3>
+                    <p class="text-xs text-gray-300">Kundun Boss raids, Chaos Goblin combination gambles, and weekend Castle Siege wars.</p>
+                </div>
+            </div>
+
+            <!-- Clips / Highlights Preview Gallery -->
+            <div id="highlights" class="pt-8 space-y-4">
+                <h3 class="font-orbitron font-bold text-xl text-white flex items-center gap-2">
+                    <i class="fas fa-video text-pink-500"></i> FEATURED STREAM CLIPS
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Clip 1 -->
+                    <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="glass-card rounded-xl overflow-hidden border border-gray-800 hover:border-red-500/50 transition-all group">
+                        <div class="relative aspect-video bg-gray-900 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=600&auto=format&fit=crop" alt="Dota 2 Clip" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-70">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                            <span class="absolute top-2 left-2 px-2 py-0.5 bg-red-600 text-white font-mono text-[10px] rounded">DOTA 2</span>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-red-600/80 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-play ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-1">
+                            <h4 class="font-orbitron font-bold text-sm text-white group-hover:text-red-400 transition-colors">5-Man Invoker Cataclysm Wipe!</h4>
+                            <p class="text-xs text-gray-400">18.4K Views • TikTok Live Clip</p>
+                        </div>
+                    </a>
+
+                    <!-- Clip 2 -->
+                    <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="glass-card rounded-xl overflow-hidden border border-gray-800 hover:border-cyan-500/50 transition-all group">
+                        <div class="relative aspect-video bg-gray-900 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=600&auto=format&fit=crop" alt="Ragnarok Clip" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-70">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                            <span class="absolute top-2 left-2 px-2 py-0.5 bg-cyan-600 text-white font-mono text-[10px] rounded">RAGNAROK</span>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-cyan-600/80 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-play ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-1">
+                            <h4 class="font-orbitron font-bold text-sm text-white group-hover:text-cyan-400 transition-colors">Solo Baphomet MVP Steal with SinX!</h4>
+                            <p class="text-xs text-gray-400">24.1K Views • TikTok Live Clip</p>
+                        </div>
+                    </a>
+
+                    <!-- Clip 3 -->
+                    <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="glass-card rounded-xl overflow-hidden border border-gray-800 hover:border-purple-500/50 transition-all group">
+                        <div class="relative aspect-video bg-gray-900 overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1560253023-3ec5d502959f?q=80&w=600&auto=format&fit=crop" alt="MU Online Clip" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 opacity-70">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                            <span class="absolute top-2 left-2 px-2 py-0.5 bg-purple-600 text-white font-mono text-[10px] rounded">MU ONLINE</span>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="w-12 h-12 rounded-full bg-purple-600/80 flex items-center justify-center text-white text-lg group-hover:scale-110 transition-transform">
+                                    <i class="fas fa-play ml-0.5"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 space-y-1">
+                            <h4 class="font-orbitron font-bold text-sm text-white group-hover:text-purple-400 transition-colors">+15 Wings Chaos Machine Success!</h4>
+                            <p class="text-xs text-gray-400">42.8K Views • TikTok Live Clip</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER & CONNECT SECTION -->
+        <footer class="glass-card border-t border-gray-800 rounded-2xl p-8 space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+                
+                <div class="md:col-span-6 space-y-3 text-center md:text-left">
+                    <div class="flex items-center justify-center md:justify-start space-x-3">
+                        <div class="w-8 h-8 rounded bg-gradient-to-br from-red-600 to-cyan-500 flex items-center justify-center font-orbitron font-bold text-white text-sm">
+                            G
+                        </div>
+                        <span class="font-orbitron font-bold text-xl text-white tracking-wider">GIAN GAMING</span>
+                    </div>
+                    <p class="text-xs text-gray-400 max-w-sm">
+                        Streaming Dota 2, Ragnarok Online, and MU Online. Catch all live broadcasts on TikTok @sepiscooking!
+                    </p>
+                </div>
+
+                <div class="md:col-span-6 flex flex-wrap justify-center md:justify-end gap-4">
+                    <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="w-12 h-12 rounded-xl glass-card border border-pink-500/40 hover:border-pink-500 flex items-center justify-center text-pink-400 text-xl hover:scale-110 transition-all" title="TikTok @sepiscooking">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="w-12 h-12 rounded-xl glass-card border border-red-500/40 hover:border-red-500 flex items-center justify-center text-red-500 text-xl hover:scale-110 transition-all" title="YouTube">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                    <a href="https://www.tiktok.com/@sepiscooking" target="_blank" rel="noopener opacity-90" class="w-12 h-12 rounded-xl glass-card border border-blue-500/40 hover:border-blue-500 flex items-center justify-center text-blue-400 text-xl hover:scale-110 transition-all" title="Discord">
+                        <i class="fab fa-discord"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="pt-6 border-t border-gray-800/80 flex flex-col sm:flex-row justify-between items-center text-xs font-mono text-gray-500 gap-2">
+                <span>&copy; <span id="currentYear"></span> Gian Gaming (@sepiscooking). All rights reserved.</span>
+                <span class="text-gray-400">Custom Dark Cyberpunk Streamer Hub</span>
+            </div>
+        </footer>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC & INTERACTIVE ENGINES -->
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // -------------------------------------------------------------
+        // 1. WEB AUDIO API SOUND ENGINE (SFX + SPELL SOUNDBOARD + SYNTH BGM)
+        // -------------------------------------------------------------
+        let soundEnabled = true;
+        let bgmEnabled = false;
+        let audioCtx = null;
+        let bgmOscillatorInterval = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playAudio(type) {
+            if (!soundEnabled) return;
+            try {
+                initAudio();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.05);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                } else if (type === 'tab') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(350, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(700, audioCtx.currentTime + 0.08);
+                    gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.08);
+                } else if (type === 'levelup') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
+                    osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                }
+            } catch(e) {}
+        }
+
+        function playSpellSFX(spell) {
+            if (!soundEnabled) return;
+            initAudio();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (spell === 'sunstrike') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.3);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start();
+                osc.stop(now + 0.35);
+            } else if (spell === 'meteor') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.linearRampToValueAtTime(80, now + 0.5);
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start();
+                osc.stop(now + 0.5);
+            } else if (spell === 'raze') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(100, now + 0.2);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+                osc.start();
+                osc.stop(now + 0.2);
+            } else if (spell === 'requiem') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(100, now);
+                osc.frequency.linearRampToValueAtTime(400, now + 0.6);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.65);
+                osc.start();
+                osc.stop(now + 0.65);
+            } else if (spell === 'hook') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.linearRampToValueAtTime(900, now + 0.15);
+                osc.frequency.linearRampToValueAtTime(300, now + 0.3);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start();
+                osc.stop(now + 0.3);
+            } else if (spell === 'dismember') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(120, now);
+                osc.frequency.linearRampToValueAtTime(160, now + 0.4);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start();
+                osc.stop(now + 0.4);
+            }
+        }
+
+        function toggleAudio() {
+            soundEnabled = !soundEnabled;
+            const icon = document.getElementById('soundIcon');
+            if (soundEnabled) {
+                icon.className = 'fas fa-volume-up text-red-400';
+                playAudio('click');
+            } else {
+                icon.className = 'fas fa-volume-mute text-gray-500';
+            }
+        }
+
+        // Retro Synth Ambient BGM Loop Engine
+        function toggleBGM() {
+            bgmEnabled = !bgmEnabled;
+            const icon = document.getElementById('bgmIcon');
+            const btn = document.getElementById('bgmToggleBtn');
+
+            if (bgmEnabled) {
+                initAudio();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                icon.className = 'fas fa-music text-purple-400 animate-pulse';
+                btn.classList.add('border-purple-400', 'bg-purple-950/60');
+
+                const notes = [130.81, 146.83, 164.81, 196.00, 220.00]; // C, D, E, G, A
+                let step = 0;
+
+                bgmOscillatorInterval = setInterval(() => {
+                    if (!bgmEnabled) return;
+                    try {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sine';
+                        osc.frequency.setValueAtTime(notes[step % notes.length], audioCtx.currentTime);
+                        gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start();
+                        osc.stop(audioCtx.currentTime + 0.4);
+                        step++;
+                    } catch(e){}
+                }, 400);
+
+            } else {
+                icon.className = 'fas fa-music text-gray-500';
+                btn.classList.remove('border-purple-400', 'bg-purple-950/60');
+                if (bgmOscillatorInterval) clearInterval(bgmOscillatorInterval);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 2. PORING CLICKER MINI-GAME LOGIC
+        // -------------------------------------------------------------
+        let poringLevel = 1;
+        let exp = 0;
+        let maxExp = 100;
+        let totalClicks = 0;
+        let zeny = 0;
+
+        function clickPoring(e) {
+            playAudio('click');
+            totalClicks++;
+            exp += 25;
+            zeny += 10;
+
+            // Spawn floating damage text over mouse click
+            const rect = document.getElementById('poringContainer').getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            const dmgText = document.createElement('div');
+            dmgText.className = 'damage-number';
+            dmgText.textContent = '+25 EXP';
+            dmgText.style.left = `${x - 20}px`;
+            dmgText.style.top = `${y - 20}px`;
+            document.getElementById('poringContainer').appendChild(dmgText);
+
+            setTimeout(() => {
+                dmgText.remove();
+            }, 800);
+
+            // Check level up
+            if (exp >= maxExp) {
+                exp = 0;
+                poringLevel++;
+                maxExp = Math.floor(maxExp * 1.5);
+                zeny += 100;
+                playAudio('levelup');
+
+                const levelBanner = document.getElementById('levelUpBanner');
+                levelBanner.classList.remove('hidden');
+                setTimeout(() => levelBanner.classList.add('hidden'), 2500);
+            }
+
+            // Update UI
+            document.getElementById('poringLevel').textContent = poringLevel;
+            document.getElementById('expText').textContent = `${exp} / ${maxExp}`;
+            document.getElementById('expBar').style.width = `${(exp / maxExp) * 100}%`;
+            document.getElementById('totalClicks').textContent = totalClicks;
+            document.getElementById('zenyEarned').textContent = `${zeny} Z`;
+        }
+
+        // -------------------------------------------------------------
+        // 3. TAB SWITCHER LOGIC
+        // -------------------------------------------------------------
+        function switchGameTab(game) {
+            playAudio('tab');
+            const tabDota = document.getElementById('tab-dota');
+            const tabRo = document.getElementById('tab-ro');
+            const tabMu = document.getElementById('tab-mu');
+
+            const contentDota = document.getElementById('content-dota');
+            const contentRo = document.getElementById('content-ro');
+            const contentMu = document.getElementById('content-mu');
+
+            [tabDota, tabRo, tabMu].forEach(tab => {
+                tab.className = 'game-tab flex-1 py-3 px-4 text-center text-gray-400 hover:text-white transition-all flex items-center justify-center gap-2';
+            });
+
+            contentDota.classList.add('hidden');
+            contentRo.classList.add('hidden');
+            contentMu.classList.add('hidden');
+
+            if (game === 'dota') {
+                tabDota.className = 'game-tab active-dota flex-1 py-3 px-4 text-center transition-all flex items-center justify-center gap-2';
+                contentDota.classList.remove('hidden');
+            } else if (game === 'ro') {
+                tabRo.className = 'game-tab active-ro flex-1 py-3 px-4 text-center transition-all flex items-center justify-center gap-2';
+                contentRo.classList.remove('hidden');
+            } else if (game === 'mu') {
+                tabMu.className = 'game-tab active-mu flex-1 py-3 px-4 text-center transition-all flex items-center justify-center gap-2';
+                contentMu.classList.remove('hidden');
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 4. RAGNAROK STAT SIMULATOR LOGIC
+        // -------------------------------------------------------------
+        function updateRoStats() {
+            const str = parseInt(document.getElementById('strSlider').value);
+            const agi = parseInt(document.getElementById('agiSlider').value);
+            const dex = parseInt(document.getElementById('dexSlider').value);
+
+            document.getElementById('strVal').textContent = str;
+            document.getElementById('agiVal').textContent = agi;
+            document.getElementById('dexVal').textContent = dex;
+
+            // Calculations
+            const baseAtk = str * 5 + Math.floor(dex / 5);
+            const bonusAtk = Math.floor(str * str / 100) * 10;
+            const aspd = (170 + (agi * 0.22) + (dex * 0.05)).toFixed(1);
+            const crit = Math.min(100, Math.floor(10 + (dex * 0.4) + (str * 0.2)));
+            const flee = 150 + agi + Math.floor(dex / 2);
+
+            document.getElementById('calcAtk').textContent = `${baseAtk} + ${bonusAtk}`;
+            document.getElementById('calcAspd').textContent = Math.min(190, aspd);
+            document.getElementById('calcCrit').textContent = `${crit}%`;
+            document.getElementById('calcFlee').textContent = `${flee} + 10`;
+        }
+
+        // -------------------------------------------------------------
+        // 5. MU ONLINE CHAOS MACHINE LOGIC
+        // -------------------------------------------------------------
+        let currentWingLevel = 10;
+
+        function combineChaosMachine() {
+            playAudio('click');
+            const msg = document.getElementById('chaosMachineMsg');
+            const title = document.getElementById('chaosItemTitle');
+            const rateElem = document.getElementById('chaosSuccessRate');
+
+            if (currentWingLevel >= 15) {
+                msg.textContent = '🌟 MAX LEVEL +15 WINGS REACHED! YOU ARE A MU LEGEND!';
+                msg.className = 'p-2 text-xs font-mono bg-yellow-950 text-yellow-300 rounded border border-yellow-500';
+                return;
+            }
+
+            // Success chance decreases with higher level
+            const successRate = Math.max(30, 85 - (currentWingLevel - 10) * 12);
+            const roll = Math.random() * 100;
+
+            if (roll <= successRate) {
+                currentWingLevel++;
+                playAudio('levelup');
+                title.textContent = `+${currentWingLevel} Wings of Dragon`;
+                msg.textContent = `🎉 SUCCESS! Upgraded Wings to +${currentWingLevel}!`;
+                msg.className = 'p-2 text-xs font-mono bg-emerald-950 text-emerald-300 rounded border border-emerald-500';
+            } else {
+                currentWingLevel = 10; // Reset to 10 on failure
+                playAudio('click');
+                title.textContent = `+10 Wings of Dragon`;
+                msg.textContent = `💥 COMBINATION FAILED! Wings degraded back to +10!`;
+                msg.className = 'p-2 text-xs font-mono bg-red-950 text-red-300 rounded border border-red-500';
+            }
+
+            const nextRate = Math.max(30, 85 - (currentWingLevel - 10) * 12);
+            rateElem.textContent = `${nextRate}%`;
+        }
+
+        function resetChaosMachine() {
+            playAudio('click');
+            currentWingLevel = 10;
+            document.getElementById('chaosItemTitle').textContent = '+10 Wings of Dragon';
+            document.getElementById('chaosSuccessRate').textContent = '75%';
+            const msg = document.getElementById('chaosMachineMsg');
+            msg.textContent = 'Insert Chaos Jewel & Jewels of Soul to begin upgrade!';
+            msg.className = 'p-2 text-xs font-mono bg-gray-950 rounded border border-gray-800 text-gray-300';
+        }
+
+        // Simulated Viewer Count Fluctuation
+        setInterval(() => {
+            const v = document.getElementById('simulatedViewers');
+            if (v) {
+                let current = parseInt(v.textContent.replace(',', ''));
+                let change = Math.floor(Math.random() * 19) - 9;
+                v.textContent = Math.max(1200, current + change).toLocaleString();
+            }
+        }, 3000);
+
+        // -------------------------------------------------------------
+        // 6. DYNAMIC CANVAS BACKGROUND WITH ANIMATED GAME CHARACTERS & SPRITES
+        // -------------------------------------------------------------
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        let currentBgFilter = 'all';
+
+        function setBgTheme(theme) {
+            playAudio('tab');
+            currentBgFilter = theme;
+            ['all', 'dota', 'ro', 'mu'].forEach(t => {
+                const b = document.getElementById(`bgBtn-${t}`);
+                if (b) {
+                    if (t === theme) {
+                        b.classList.add('ring-2', 'ring-white');
+                    } else {
+                        b.classList.remove('ring-2', 'ring-white');
+                    }
+                }
+            });
+        }
+
+        // Animated Game Entities floating across screen
+        class GameEntity {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.speedY = (Math.random() - 0.5) * 0.6 - 0.2;
+                this.size = Math.random() * 18 + 14;
+
+                // Pick entity type: Dota Hero, RO Monster/Sprite, MU Chaos Wing
+                const types = ['dota_invoker', 'dota_sf', 'ro_poring', 'ro_mvp', 'mu_wing', 'rune_symbol'];
+                this.type = types[Math.floor(Math.random() * types.length)];
+                this.alpha = Math.random() * 0.45 + 0.25;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                if (this.x < -30 || this.x > canvas.width + 30 || this.y < -30 || this.y > canvas.height + 30) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                // Filter check
+                if (currentBgFilter === 'dota' && !this.type.startsWith('dota')) return;
+                if (currentBgFilter === 'ro' && !this.type.startsWith('ro')) return;
+                if (currentBgFilter === 'mu' && !this.type.startsWith('mu')) return;
+
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+
+                if (this.type === 'ro_poring') {
+                    // Render Poring Blob
+                    ctx.fillStyle = '#FF69B4';
+                    ctx.beginPath();
+                    ctx.ellipse(this.x, this.y, this.size, this.size * 0.8, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    // Eyes
+                    ctx.fillStyle = '#111';
+                    ctx.beginPath();
+                    ctx.arc(this.x - 4, this.y - 2, 2, 0, Math.PI * 2);
+                    ctx.arc(this.x + 4, this.y - 2, 2, 0, Math.PI * 2);
+                    ctx.fill();
+                } else if (this.type === 'dota_invoker') {
+                    // Invoker Solar Orb Rune
+                    ctx.strokeStyle = '#FFD700';
+                    ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size * 0.7, 0, Math.PI * 2);
+                    ctx.stroke();
+                    ctx.fillStyle = '#FFA500';
+                    ctx.fillText('☀️', this.x - 6, this.y + 4);
+                } else if (this.type === 'dota_sf') {
+                    // Shadow Fiend Soul
+                    ctx.fillStyle = '#E53935';
+                    ctx.font = `${this.size}px Orbitron`;
+                    ctx.fillText('💀', this.x, this.y);
+                } else if (this.type === 'ro_mvp') {
+                    // MVP Golden Badge
+                    ctx.fillStyle = '#FFD700';
+                    ctx.font = `bold ${this.size * 0.8}px Orbitron`;
+                    ctx.fillText('👑 MVP', this.x, this.y);
+                } else if (this.type === 'mu_wing') {
+                    // MU Wing Feather Symbol
+                    ctx.fillStyle = '#E040FB';
+                    ctx.font = `${this.size}px Orbitron`;
+                    ctx.fillText('🪽', this.x, this.y);
+                } else {
+                    // Cyber Rune Symbol
+                    ctx.fillStyle = '#00B0FF';
+                    ctx.font = `${this.size * 0.7}px Orbitron`;
+                    ctx.fillText('⚡', this.x, this.y);
+                }
+
+                ctx.restore();
+            }
+        }
+
+        const gameEntities = [];
+        for (let i = 0; i < 45; i++) {
+            gameEntities.push(new GameEntity());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < gameEntities.length; i++) {
+                gameEntities[i].update();
+                gameEntities[i].draw();
+            }
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = function() {
+            animateCanvas();
+        };
+    </script>
+</body>
+</html>
