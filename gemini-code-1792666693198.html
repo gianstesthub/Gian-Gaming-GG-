@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIAN.EXE // Pro Gaming Portfolio</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0B0F19',
+                            card: '#111827',
+                            accent: '#00F0FF',
+                            magenta: '#FF007F',
+                            green: '#00FF66',
+                            purple: '#7000FF'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        inter: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Orbitron:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0B0F19;
+            color: #F3F4F6;
+            overflow-x: hidden;
+        }
+        
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Scanline Overlay Effect */
+        .scanlines {
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0),
+                rgba(255,255,255,0) 50%,
+                rgba(0, 0, 0, 0.3) 50%,
+                rgba(0, 0, 0, 0.3)
+            );
+            background-size: 100% 4px;
+        }
+
+        /* Neon Glow Effects */
+        .glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.7), 0 0 20px rgba(0, 240, 255, 0.5);
+        }
+        .glow-magenta {
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.7), 0 0 20px rgba(255, 0, 127, 0.5);
+        }
+        .box-glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+        }
+        .box-glow-magenta {
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.3);
+        }
+
+        /* Glitch Text Effect */
+        .glitch-wrapper {
+            position: relative;
+        }
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip: rect(0, 0, 0, 0);
+        }
+        .glitch-text::before {
+            left: -2px;
+            text-shadow: 2px 0 #FF007F;
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch-text::after {
+            left: 2px;
+            text-shadow: -2px 0 #00F0FF;
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(20px, 9999px, 15px, 0); }
+            20% { clip: rect(40px, 9999px, 80px, 0); }
+            40% { clip: rect(10px, 9999px, 50px, 0); }
+            60% { clip: rect(60px, 9999px, 10px, 0); }
+            80% { clip: rect(30px, 9999px, 90px, 0); }
+            100% { clip: rect(80px, 9999px, 30px, 0); }
+        }
+
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(10px, 9999px, 80px, 0); }
+            20% { clip: rect(80px, 9999px, 10px, 0); }
+            40% { clip: rect(50px, 9999px, 30px, 0); }
+            60% { clip: rect(20px, 9999px, 70px, 0); }
+            80% { clip: rect(70px, 9999px, 20px, 0); }
+            100% { clip: rect(30px, 9999px, 60px, 0); }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B0F19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1F2937;
+            border-radius: 4px;
+            border: 1px solid #00F0FF;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00F0FF;
+        }
+
+        /* Canvas mini game cursor */
+        #game-canvas {
+            cursor: crosshair;
+        }
+    </style>
+</head>
+<body class="relative bg-cyber-bg text-gray-200 min-h-screen">
+
+    <!-- Grid Background Pattern -->
+    <div class="fixed inset-0 pointer-events-none opacity-10 bg-[linear-gradient(to_right,#1f2937_1px,transparent_1px),linear-gradient(to_bottom,#1f2937_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+    
+    <!-- CRT Scanlines Effect -->
+    <div class="fixed inset-0 pointer-events-none z-50 scanlines opacity-30"></div>
+
+    <!-- SOUND EFFECTS GENERATOR (WEB AUDIO API) -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'hover') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.05);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.05);
+            } else if (type === 'click') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.08);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.08);
+            } else if (type === 'hit') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'level') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.35);
+            }
+        }
+    </script>
+
+    <!-- NAVBAR -->
+    <nav class="sticky top-0 z-40 bg-cyber-bg/80 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#hero" onmouseenter="playSound('hover')" onclick="playSound('click')" class="flex items-center gap-2 group">
+                <span class="font-orbitron text-2xl font-black tracking-wider text-white group-hover:text-cyber-accent transition">
+                    GIAN<span class="text-cyber-accent group-hover:text-cyber-magenta">.EXE</span>
+                </span>
+            </a>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center gap-8 font-orbitron text-sm uppercase tracking-widest">
+                <a href="#about" onmouseenter="playSound('hover')" class="hover:text-cyber-accent transition">Bio</a>
+                <a href="#games" onmouseenter="playSound('hover')" class="hover:text-cyber-accent transition">Games</a>
+                <a href="#setup" onmouseenter="playSound('hover')" class="hover:text-cyber-accent transition">Battle Station</a>
+                <a href="#arena" onmouseenter="playSound('hover')" class="hover:text-cyber-accent transition">Aim Arena</a>
+                <a href="#highlights" onmouseenter="playSound('hover')" class="hover:text-cyber-accent transition">Clips</a>
+            </div>
+
+            <!-- Status Indicator -->
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-gray-900 border border-gray-800 rounded-full px-3 py-1">
+                    <span class="relative flex h-2.5 w-2.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-green opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyber-green"></span>
+                    </span>
+                    <span class="font-orbitron text-xs font-semibold uppercase text-cyber-green tracking-wider">LIVE ON TWITCH</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20 space-y-24">
+
+        <!-- HERO SECTION -->
+        <section id="hero" class="relative min-h-[75vh] flex flex-col justify-center items-center text-center pt-8">
+            <!-- Avatar Frame -->
+            <div class="relative mb-6 group cursor-pointer" onclick="gainXP(50); playSound('level');">
+                <div class="absolute -inset-1 bg-gradient-to-r from-cyber-accent via-cyber-magenta to-cyber-green rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
+                <div class="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-cyber-card p-1 border-2 border-cyber-accent/50 overflow-hidden shadow-2xl">
+                    <img src="https://i.imgur.com/8N4X16k.jpg" alt="Gian Avatar" class="w-full h-full object-cover rounded-full group-hover:scale-110 transition duration-500">
+                </div>
+                <div class="absolute bottom-1 right-1 bg-cyber-card border border-cyber-green text-cyber-green text-[10px] font-orbitron px-2 py-0.5 rounded-full font-bold">
+                    LVL <span id="hero-lvl-display">99</span>
+                </div>
+            </div>
+
+            <!-- Glitch Name Header -->
+            <div class="glitch-wrapper mb-2">
+                <h1 class="glitch-text font-orbitron text-6xl sm:text-8xl font-black tracking-widest uppercase" data-text="GIAN">
+                    GIAN
+                </h1>
+            </div>
+
+            <p class="font-orbitron text-cyber-accent text-lg sm:text-2xl font-bold tracking-wider mb-6 glow-cyan">
+                PRO GAMER <span class="text-white">|</span> STREAMER <span class="text-white">|</span> CONTENT CREATOR
+            </p>
+
+            <p class="max-w-2xl text-gray-400 text-base sm:text-lg mb-8 leading-relaxed">
+                Welcome to my digital arena. Competitive FPS Specialist, Immortal Valorant grinder, and tech enthusiast. Testing human reflexes one headshot at a time.
+            </p>
+
+            <!-- Call To Actions -->
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#highlights" onmouseenter="playSound('hover')" onclick="playSound('click')" class="px-8 py-3 bg-cyber-magenta hover:bg-magenta-600 text-white font-orbitron font-bold uppercase tracking-wider rounded-md shadow-lg shadow-cyber-magenta/30 hover:shadow-cyber-magenta/60 transition flex items-center gap-2">
+                    <i data-lucide="tv"></i> Watch Stream
+                </a>
+                <a href="#setup" onmouseenter="playSound('hover')" onclick="playSound('click')" class="px-8 py-3 bg-gray-900 border border-cyber-accent/50 hover:border-cyber-accent text-cyber-accent font-orbitron font-bold uppercase tracking-wider rounded-md transition hover:bg-cyber-accent/10 flex items-center gap-2">
+                    <i data-lucide="cpu"></i> View Stats
+                </a>
+                <button onclick="document.getElementById('arena').scrollIntoView(); playSound('click');" class="px-8 py-3 bg-cyber-green/20 border border-cyber-green hover:bg-cyber-green/30 text-cyber-green font-orbitron font-bold uppercase tracking-wider rounded-md transition flex items-center gap-2">
+                    <i data-lucide="crosshair"></i> Test Reflexes
+                </button>
+            </div>
+        </section>
+
+        <!-- ABOUT / PLAYER PROFILE STATS -->
+        <section id="about" class="scroll-mt-20">
+            <div class="border border-gray-800 bg-cyber-card/60 backdrop-blur-md rounded-2xl p-6 sm:p-10 relative overflow-hidden">
+                <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-cyber-accent/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 border-b border-gray-800 pb-6">
+                    <div>
+                        <h2 class="font-orbitron text-3xl font-bold text-white uppercase tracking-wider flex items-center gap-3">
+                            <i data-lucide="user-check" class="text-cyber-accent"></i> Player Profile
+                        </h2>
+                        <p class="text-gray-400 text-sm mt-1">Verified Gamer Tag ID: #GIAN-001</p>
+                    </div>
+
+                    <!-- Interactive XP Level Bar -->
+                    <div class="w-full md:w-72 bg-gray-900 border border-gray-800 p-3 rounded-xl">
+                        <div class="flex justify-between font-orbitron text-xs mb-1">
+                            <span class="text-gray-400">BATTLE PASS XP</span>
+                            <span class="text-cyber-green font-bold"><span id="xp-num">740</span> / 1000 XP</span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-2.5 rounded-full overflow-hidden">
+                            <div id="xp-bar" class="bg-gradient-to-r from-cyber-accent to-cyber-green h-full transition-all duration-500" style="width: 74%;"></div>
+                        </div>
+                        <p class="text-[10px] text-gray-500 text-center mt-1">Click profile photo above or complete targets to gain XP!</p>
+                    </div>
+                </div>
+
+                <!-- Profile Grid Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                    <div class="bg-gray-900/80 border border-gray-800 p-4 rounded-xl hover:border-cyber-accent/40 transition">
+                        <div class="text-xs font-orbitron text-gray-400 uppercase mb-1">Main Game</div>
+                        <div class="text-xl sm:text-2xl font-orbitron font-bold text-white">VALORANT</div>
+                        <div class="text-xs text-cyber-magenta font-semibold mt-1">Rank: Radiant / Imm 3</div>
+                    </div>
+                    <div class="bg-gray-900/80 border border-gray-800 p-4 rounded-xl hover:border-cyber-accent/40 transition">
+                        <div class="text-xs font-orbitron text-gray-400 uppercase mb-1">Headshot %</div>
+                        <div class="text-xl sm:text-2xl font-orbitron font-bold text-cyber-green">38.4%</div>
+                        <div class="text-xs text-gray-500 mt-1">Top 0.5% Global</div>
+                    </div>
+                    <div class="bg-gray-900/80 border border-gray-800 p-4 rounded-xl hover:border-cyber-accent/40 transition">
+                        <div class="text-xs font-orbitron text-gray-400 uppercase mb-1">Role Specialist</div>
+                        <div class="text-xl sm:text-2xl font-orbitron font-bold text-white">DUELIST</div>
+                        <div class="text-xs text-cyber-accent mt-1">Jett / Reyna / Raze</div>
+                    </div>
+                    <div class="bg-gray-900/80 border border-gray-800 p-4 rounded-xl hover:border-cyber-accent/40 transition">
+                        <div class="text-xs font-orbitron text-gray-400 uppercase mb-1">Win Rate</div>
+                        <div class="text-xl sm:text-2xl font-orbitron font-bold text-cyber-accent">64.2%</div>
+                        <div class="text-xs text-gray-500 mt-1">Current Season</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GAMES PLAYED / MAIN MAINS -->
+        <section id="games" class="scroll-mt-20">
+            <h2 class="font-orbitron text-3xl font-bold text-white uppercase tracking-wider mb-8 flex items-center gap-3">
+                <i data-lucide="gamepad-2" class="text-cyber-magenta"></i> Active Titles
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Game Card 1 -->
+                <div class="group relative bg-cyber-card border border-gray-800 hover:border-cyber-accent rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                    <div class="h-48 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80');">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-card via-transparent to-transparent"></div>
+                        <span class="absolute top-3 right-3 bg-cyber-magenta text-white font-orbitron text-xs px-2.5 py-1 rounded-md font-bold uppercase">Main</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-orbitron text-xl font-bold text-white mb-2 group-hover:text-cyber-accent transition">VALORANT</h3>
+                        <p class="text-sm text-gray-400 mb-4">Tactical 5v5 character-based FPS. High precision aim and tactical utility usage.</p>
+                        <div class="flex justify-between items-center text-xs font-orbitron text-gray-500 border-t border-gray-800 pt-3">
+                            <span>Hours: 2,400+</span>
+                            <span class="text-cyber-green">Peak: Radiant</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Card 2 -->
+                <div class="group relative bg-cyber-card border border-gray-800 hover:border-cyber-accent rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                    <div class="h-48 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=600&q=80');">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-card via-transparent to-transparent"></div>
+                        <span class="absolute top-3 right-3 bg-cyber-purple text-white font-orbitron text-xs px-2.5 py-1 rounded-md font-bold uppercase">Competitive</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-orbitron text-xl font-bold text-white mb-2 group-hover:text-cyber-accent transition">APEX LEGENDS</h3>
+                        <p class="text-sm text-gray-400 mb-4">Fast-paced hero battle royale. High movement speed, tracking aim, and squad rotation tactics.</p>
+                        <div class="flex justify-between items-center text-xs font-orbitron text-gray-500 border-t border-gray-800 pt-3">
+                            <span>Hours: 1,100+</span>
+                            <span class="text-cyber-accent">Peak: Apex Predator</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Game Card 3 -->
+                <div class="group relative bg-cyber-card border border-gray-800 hover:border-cyber-accent rounded-xl overflow-hidden transition-all duration-300 hover:-translate-y-2">
+                    <div class="h-48 bg-cover bg-center relative" style="background-image: url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=600&q=80');">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cyber-card via-transparent to-transparent"></div>
+                        <span class="absolute top-3 right-3 bg-gray-800 text-gray-300 font-orbitron text-xs px-2.5 py-1 rounded-md font-bold uppercase">Casual</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-orbitron text-xl font-bold text-white mb-2 group-hover:text-cyber-accent transition">CS2 / OVERWATCH 2</h3>
+                        <p class="text-sm text-gray-400 mb-4">Classic arena shooter mechanics, crosshair placement drills, and team synergy practice.</p>
+                        <div class="flex justify-between items-center text-xs font-orbitron text-gray-500 border-t border-gray-800 pt-3">
+                            <span>Hours: 1,800+</span>
+                            <span class="text-cyber-green">Peak: Global Elite</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BATTLESTATION / SETUP SPECIFICATIONS -->
+        <section id="setup" class="scroll-mt-20">
+            <h2 class="font-orbitron text-3xl font-bold text-white uppercase tracking-wider mb-8 flex items-center gap-3">
+                <i data-lucide="hard-drive" class="text-cyber-green"></i> Battlestation Rig Specs
+            </h2>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- PC Specs Table -->
+                <div class="bg-cyber-card border border-gray-800 rounded-xl p-6">
+                    <h3 class="font-orbitron text-lg font-bold text-cyber-accent uppercase mb-4 flex items-center gap-2">
+                        <i data-lucide="cpu" class="w-5 h-5"></i> Gaming PC Rig
+                    </h3>
+                    <div class="space-y-3 font-orbitron text-sm">
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Processor (CPU)</span>
+                            <span class="text-white font-semibold">AMD Ryzen 7 7800X3D</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Graphics (GPU)</span>
+                            <span class="text-cyber-magenta font-semibold">NVIDIA RTX 4080 Super 16GB</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Memory (RAM)</span>
+                            <span class="text-white font-semibold">32GB DDR5 6000MHz CL30</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Storage</span>
+                            <span class="text-white font-semibold">2TB NVMe PCIe 4.0 SSD</span>
+                        </div>
+                        <div class="flex justify-between pb-1">
+                            <span class="text-gray-400">Cooling</span>
+                            <span class="text-white font-semibold">360mm AIO Liquid Cooler</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Peripherals Specs Table -->
+                <div class="bg-cyber-card border border-gray-800 rounded-xl p-6">
+                    <h3 class="font-orbitron text-lg font-bold text-cyber-green uppercase mb-4 flex items-center gap-2">
+                        <i data-lucide="mouse" class="w-5 h-5"></i> Gear & Peripherals
+                    </h3>
+                    <div class="space-y-3 font-orbitron text-sm">
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Primary Monitor</span>
+                            <span class="text-cyber-green font-semibold">240Hz 0.5ms Esports Display</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Gaming Mouse</span>
+                            <span class="text-white font-semibold">Superlight Wireless (400 DPI)</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Keyboard</span>
+                            <span class="text-white font-semibold">Custom Rapid-Trigger Magnetic Keyboard</span>
+                        </div>
+                        <div class="flex justify-between border-b border-gray-800/60 pb-2">
+                            <span class="text-gray-400">Audio / Headset</span>
+                            <span class="text-white font-semibold">Studio Open-Back IEMs + DAC</span>
+                        </div>
+                        <div class="flex justify-between pb-1">
+                            <span class="text-gray-400">Microphone</span>
+                            <span class="text-white font-semibold">Broadcast Dynamic XLR Mic</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- INTERACTIVE AIM REFLEX MINI GAME -->
+        <section id="arena" class="scroll-mt-20">
+            <div class="border border-cyber-accent/40 bg-cyber-card rounded-2xl p-6 sm:p-8 relative overflow-hidden box-glow-cyan">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                    <div>
+                        <h2 class="font-orbitron text-2xl sm:text-3xl font-bold text-white uppercase tracking-wider flex items-center gap-3">
+                            <i data-lucide="target" class="text-cyber-accent"></i> Gian's Reflex Trainer
+                        </h2>
+                        <p class="text-gray-400 text-sm">Click target red dots as fast as possible in 15 seconds to prove your gamer reflexes!</p>
+                    </div>
+
+                    <!-- Game Dashboard Stats -->
+                    <div class="flex gap-4 font-orbitron">
+                        <div class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-lg text-center">
+                            <div class="text-[10px] text-gray-400">SCORE</div>
+                            <div id="game-score" class="text-2xl font-bold text-cyber-accent">0</div>
+                        </div>
+                        <div class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-lg text-center">
+                            <div class="text-[10px] text-gray-400">TIME</div>
+                            <div id="game-timer" class="text-2xl font-bold text-cyber-magenta">15s</div>
+                        </div>
+                        <div class="bg-gray-900 border border-gray-800 px-4 py-2 rounded-lg text-center">
+                            <div class="text-[10px] text-gray-400">HIGH SCORE</div>
+                            <div id="game-high" class="text-2xl font-bold text-cyber-green">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas Game Area -->
+                <div class="relative w-full h-80 sm:h-96 bg-gray-950 border border-gray-800 rounded-xl overflow-hidden flex items-center justify-center">
+                    <canvas id="game-canvas" class="w-full h-full"></canvas>
+                    
+                    <!-- Overlay Start Screen -->
+                    <div id="game-overlay" class="absolute inset-0 bg-cyber-bg/90 flex flex-col items-center justify-center gap-4 p-6 text-center">
+                        <i data-lucide="crosshair" class="w-16 h-16 text-cyber-accent animate-pulse"></i>
+                        <h3 class="font-orbitron text-2xl font-bold text-white uppercase">Ready to Aim Test?</h3>
+                        <p class="text-gray-400 text-sm max-w-md">Click Start Game. Targets will spawn randomly. Hit as many as you can!</p>
+                        <button id="start-btn" onclick="startGame()" class="px-8 py-3 bg-cyber-accent text-black font-orbitron font-black uppercase tracking-widest rounded-lg hover:bg-cyan-300 transition transform hover:scale-105">
+                            START TRAINING
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- STREAM / HIGHLIGHT VIDEOS -->
+        <section id="highlights" class="scroll-mt-20">
+            <h2 class="font-orbitron text-3xl font-bold text-white uppercase tracking-wider mb-8 flex items-center gap-3">
+                <i data-lucide="video" class="text-cyber-magenta"></i> Featured Highlights
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Highlight Card 1 -->
+                <div class="bg-cyber-card border border-gray-800 rounded-xl overflow-hidden">
+                    <div class="relative aspect-video bg-gray-900 flex items-center justify-center group cursor-pointer" onclick="playSound('click')">
+                        <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=80" alt="1v5 Ace Clutch" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                        <div class="absolute w-16 h-16 rounded-full bg-cyber-magenta/90 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+                            <i data-lucide="play" class="w-8 h-8 fill-current ml-1"></i>
+                        </div>
+                        <span class="absolute bottom-3 right-3 bg-black/80 font-orbitron text-xs text-white px-2 py-1 rounded">0:45</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-orbitron text-lg font-bold text-white mb-1">1v5 Radiant Clutch Ace (Valorant Overtime)</h3>
+                        <p class="text-sm text-gray-400">Insane sheriff headshots to secure the match victory on Haven.</p>
+                    </div>
+                </div>
+
+                <!-- Highlight Card 2 -->
+                <div class="bg-cyber-card border border-gray-800 rounded-xl overflow-hidden">
+                    <div class="relative aspect-video bg-gray-900 flex items-center justify-center group cursor-pointer" onclick="playSound('click')">
+                        <img src="https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=800&q=80" alt="Apex Predator Squad Wipe" class="w-full h-full object-cover opacity-60 group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition"></div>
+                        <div class="absolute w-16 h-16 rounded-full bg-cyber-accent/90 text-black flex items-center justify-center shadow-lg group-hover:scale-110 transition">
+                            <i data-lucide="play" class="w-8 h-8 fill-current ml-1"></i>
+                        </div>
+                        <span class="absolute bottom-3 right-3 bg-black/80 font-orbitron text-xs text-white px-2 py-1 rounded">1:20</span>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-orbitron text-lg font-bold text-white mb-1">Solo Vs Squad Predator Wipe</h3>
+                        <p class="text-sm text-gray-400">Fast movement tech and Wingman beam in final ring.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER & SOCIAL LINKS -->
+    <footer class="border-t border-gray-800 bg-cyber-card/80 py-12">
+        <div class="max-w-7xl mx-auto px-4 text-center space-y-6">
+            <div class="font-orbitron text-2xl font-black tracking-widest text-white">
+                GIAN<span class="text-cyber-accent">.EXE</span>
+            </div>
+
+            <p class="text-gray-400 text-sm max-w-md mx-auto">
+                Connect with Gian across social media channels for daily clips, stream announcements, and gaming setups.
+            </p>
+
+            <!-- Social Links -->
+            <div class="flex justify-center gap-6">
+                <a href="#" onmouseenter="playSound('hover')" class="w-12 h-12 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-cyber-accent hover:border-cyber-accent hover:bg-cyber-accent/10 transition">
+                    <i data-lucide="twitch"></i>
+                </a>
+                <a href="#" onmouseenter="playSound('hover')" class="w-12 h-12 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-cyber-magenta hover:border-cyber-magenta hover:bg-cyber-magenta/10 transition">
+                    <i data-lucide="youtube"></i>
+                </a>
+                <a href="#" onmouseenter="playSound('hover')" class="w-12 h-12 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-cyber-green hover:border-cyber-green hover:bg-cyber-green/10 transition">
+                    <i data-lucide="twitter"></i>
+                </a>
+                <a href="#" onmouseenter="playSound('hover')" class="w-12 h-12 rounded-xl bg-gray-900 border border-gray-800 flex items-center justify-center text-cyber-purple hover:border-cyber-purple hover:bg-cyber-purple/10 transition">
+                    <i data-lucide="message-square"></i>
+                </a>
+            </div>
+
+            <p class="text-xs text-gray-600 font-orbitron pt-4">
+                &copy; GIAN. ALL RIGHTS RESERVED. DESIGNED FOR GAMERS.
+            </p>
+        </div>
+    </footer>
+
+    <!-- LUCIDE ICONS INITIALIZATION -->
+    <script>
+        lucide.createIcons();
+    </script>
+
+    <!-- GAME CODE & XP INTERACTION SYSTEM -->
+    <script>
+        // Experience Point System
+        let currentXP = 740;
+        let currentLvl = 99;
+
+        function gainXP(amount) {
+            currentXP += amount;
+            if (currentXP >= 1000) {
+                currentXP -= 1000;
+                currentLvl++;
+                document.getElementById('hero-lvl-display').innerText = currentLvl;
+            }
+            document.getElementById('xp-num').innerText = currentXP;
+            document.getElementById('xp-bar').style.width = (currentXP / 10) + '%';
+        }
+
+        // Aim Reflex Trainer Engine
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        let gameActive = false;
+        let score = 0;
+        let highScore = 0;
+        let timeLeft = 15;
+        let timerInterval;
+        let target = { x: 0, y: 0, radius: 22 };
+
+        function resizeCanvas() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function spawnTarget() {
+            const margin = 40;
+            target.x = margin + Math.random() * (canvas.width - margin * 2);
+            target.y = margin + Math.random() * (canvas.height - margin * 2);
+        }
+
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (gameActive) {
+                // Target Outer Glow Ring
+                ctx.beginPath();
+                ctx.arc(target.x, target.y, target.radius + 6, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 0, 127, 0.25)';
+                ctx.fill();
+
+                // Target Circle
+                ctx.beginPath();
+                ctx.arc(target.x, target.y, target.radius, 0, Math.PI * 2);
+                ctx.fillStyle = '#FF007F';
+                ctx.fill();
+
+                // Inner Crosshair Bullseye
+                ctx.beginPath();
+                ctx.arc(target.x, target.y, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#00F0FF';
+                ctx.fill();
+
+                requestAnimationFrame(drawGame);
+            }
+        }
+
+        function startGame() {
+            score = 0;
+            timeLeft = 15;
+            gameActive = true;
+            document.getElementById('game-score').innerText = score;
+            document.getElementById('game-timer').innerText = timeLeft + 's';
+            document.getElementById('game-overlay').classList.add('hidden');
+            
+            spawnTarget();
+            drawGame();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                document.getElementById('game-timer').innerText = timeLeft + 's';
+
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            playSound('level');
+
+            if (score > highScore) {
+                highScore = score;
+                document.getElementById('game-high').innerText = highScore;
+            }
+
+            // Award XP based on score
+            gainXP(score * 10);
+
+            document.getElementById('game-overlay').classList.remove('hidden');
+            document.getElementById('game-overlay').querySelector('h3').innerText = `Time Up! Score: ${score}`;
+            document.getElementById('start-btn').innerText = 'TRY AGAIN';
+        }
+
+        canvas.addEventListener('click', (e) => {
+            if (!gameActive) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+
+            const dist = Math.hypot(clickX - target.x, clickY - target.y);
+
+            if (dist < target.radius + 5) {
+                score++;
+                document.getElementById('game-score').innerText = score;
+                playSound('hit');
+                spawnTarget();
+            }
+        });
+    </script>
+</body>
+</html>
