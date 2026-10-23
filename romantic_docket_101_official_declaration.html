@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Official Love & Feelings Declaration for Hon</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Tone.js for Sound Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        heading: ['Fredoka', 'sans-serif'],
+                        body: ['Nunito', 'sans-serif'],
+                        handwriting: ['Caveat', 'cursive'],
+                    },
+                    colors: {
+                        matcha: {
+                            50: '#f4f7f4',
+                            100: '#e3ebe3',
+                            200: '#c5d7c6',
+                            300: '#9ebf9f',
+                            400: '#709775',
+                            500: '#527757',
+                            600: '#3f5d43',
+                        },
+                        coffee: {
+                            50: '#fbf7f5',
+                            100: '#f3e9e3',
+                            200: '#e4d0c3',
+                            300: '#ceb09c',
+                            400: '#a37b60',
+                            500: '#7a543e',
+                            600: '#5c3d2a',
+                            700: '#3d2314',
+                        },
+                        romantic: {
+                            50: '#fff0f3',
+                            100: '#ffccd5',
+                            200: '#ffb3c1',
+                            300: '#ff85a1',
+                            400: '#f72585',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s infinite',
+                        'wiggle': 'wiggle 0.5s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotate(5deg)' },
+                        },
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, #f4f7f4 0%, #fff0f3 40%, #f3e9e3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .font-heading {
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .font-handwriting {
+            font-family: 'Caveat', cursive;
+        }
+
+        /* Perspective for 3D card flips */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+
+        /* Floating background items */
+        .bg-float-item {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            animation: floatUp 10s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) scale(0.5) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.85;
+            }
+            100% {
+                transform: translateY(-20vh) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Glassmorphism Effect */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.7);
+        }
+
+        /* Stamp Effect */
+        .stamp {
+            transform: rotate(-12deg);
+            border: 4px dashed #709775;
+            box-shadow: 0 0 0 4px rgba(112, 151, 117, 0.2);
+        }
+
+        /* Sticky note pin effect */
+        .sticky-note {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .sticky-note:hover {
+            transform: translateY(-6px) rotate(0deg) scale(1.03);
+            z-index: 20;
+        }
+    </style>
+</head>
+<body class="relative text-gray-800 pb-16">
+
+    <!-- Floating Background Items Container -->
+    <div id="floatContainer" class="fixed inset-0 pointer-events-none overflow-hidden z-0"></div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+
+        <!-- Top Anniversary Badge -->
+        <div class="text-center mb-6">
+            <span class="inline-flex items-center gap-2 bg-matcha-100 text-matcha-600 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm border border-matcha-200 animate-bounce">
+                <i class="fa-solid fa-calendar-heart text-romantic-400"></i> OCT 11 • OUR SPECIAL DAY FOREVER <i class="fa-solid fa-heart text-romantic-400"></i>
+            </span>
+        </div>
+
+        <!-- Header / Short & Witty Official Declaration Caption -->
+        <header class="text-center mb-10 animate-fade-in">
+            <div class="inline-block bg-white/90 backdrop-blur px-4 py-1 rounded-full shadow-sm text-xs font-bold text-coffee-600 mb-3 border border-coffee-200 uppercase tracking-widest">
+                <i class="fa-solid fa-gavel mr-1 text-matcha-500"></i> High Court of Romance • Hon ID #OCT11-FOREVER
+            </div>
+            
+            <h1 class="text-3xl sm:text-5xl font-extrabold font-heading text-coffee-700 tracking-tight leading-tight mb-3">
+                Official Declaration for <span class="text-matcha-500 underline decoration-wavy decoration-romantic-300">Apple</span> 🍵☕
+            </h1>
+            
+            <!-- SHORT & WITTY CAPTION AS REQUESTED -->
+            <div class="max-w-2xl mx-auto glass-card p-4 sm:p-5 rounded-2xl border-2 border-matcha-200 shadow-md">
+                <p class="text-base sm:text-lg font-bold text-coffee-600 font-heading leading-relaxed">
+                    "Exhibit A: I love you more than your daily matcha latte. <br class="hidden sm:inline"/>Exhibit B: Ever since Oct 11, you're stuck with me forever. <span class="text-romantic-400">Case closed!</span> 💖"
+                </p>
+            </div>
+        </header>
+
+        <!-- Section 1: The Verdict / Question Section -->
+        <section class="glass-card rounded-3xl p-6 sm:p-10 shadow-xl mb-12 text-center relative overflow-hidden transition-all duration-300 border-2 border-matcha-200">
+            <div class="absolute top-0 left-0 w-full h-2.5 bg-gradient-to-r from-matcha-400 via-romantic-400 to-coffee-500"></div>
+
+            <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-matcha-100 text-matcha-500 text-3xl mb-4 shadow-inner">
+                <i class="fa-solid fa-mug-hot animate-pulse"></i>
+            </div>
+
+            <h2 class="text-2xl sm:text-3xl font-bold font-heading text-coffee-700 mb-2">
+                So... are you ready for the verdict?
+            </h2>
+            <p class="text-gray-600 text-base sm:text-lg max-w-xl mx-auto mb-8 font-medium">
+                After endless cups of coffee, iced matcha lattes, and butterflies in my stomach since Oct 11, will you officially be mine forever?
+            </p>
+
+            <!-- Interactive Choice Buttons Container -->
+            <div id="buttonArea" class="relative min-h-[140px] flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6">
+                <!-- YES BUTTON -->
+                <button id="yesBtn" onclick="handleYesClick()" 
+                    class="z-20 bg-gradient-to-r from-matcha-500 to-matcha-600 hover:from-matcha-600 hover:to-matcha-700 text-white font-bold text-lg sm:text-xl px-8 py-4 rounded-2xl shadow-lg hover:shadow-matcha-300/50 transform hover:-translate-y-1 transition-all duration-200 flex items-center gap-3 cursor-pointer">
+                    <span>Yes, Absolutely! 💖🍵</span>
+                </button>
+
+                <!-- NO / ESCAPING BUTTON -->
+                <button id="noBtn" 
+                    class="z-20 bg-coffee-100 hover:bg-coffee-200 text-coffee-700 font-bold text-base sm:text-lg px-6 py-4 rounded-2xl shadow transition-all duration-200 flex items-center gap-2 cursor-pointer border border-coffee-300">
+                    <span>No way / Let me think 😜</span>
+                </button>
+            </div>
+
+            <!-- Hint text when dodging starts -->
+            <p id="dodgeHint" class="text-xs text-romantic-400 mt-4 opacity-0 transition-opacity duration-300 italic font-bold">
+                (Psst...! The 'No' button is legally restricted and out of stock forever! 😉)
+            </p>
+        </section>
+
+        <!-- NEW SECTION: Cute Love Notes & Quotes Section -->
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <div class="inline-block px-3 py-1 bg-romantic-100 text-romantic-400 text-xs font-bold rounded-full mb-2 uppercase tracking-wider">
+                    <i class="fa-solid fa-heart mr-1"></i> Special Delivery for You
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-bold font-heading text-coffee-700">
+                    <i class="fa-solid fa-note-sticky text-matcha-500 mr-2"></i>Cute Love Notes & Brewed Quotes
+                </h2>
+                <p class="text-sm sm:text-base text-gray-600">Freshly brewed love notes handwritten just for you! Tap to open your quote dispenser.</p>
+            </div>
+
+            <!-- Sticky Love Notes Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Note 1 -->
+                <div class="sticky-note bg-amber-50 rounded-2xl p-6 shadow-md border-2 border-amber-200 transform -rotate-2 relative overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-red-400/20 absolute -top-3 left-1/2 -translate-x-1/2 flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    </div>
+                    <div class="text-right text-xs font-bold text-coffee-400 mb-1">Oct 11 • Note #1</div>
+                    <p class="font-handwriting text-2xl text-coffee-700 font-bold leading-snug">"You're the matcha to my morning, Hon. Everything is brighter with you."</p>
+                    <div class="mt-4 flex justify-between items-center text-xs font-bold text-matcha-500">
+                        <span>🍵 100% Pure Sweetness</span>
+                        <i class="fa-solid fa-heart text-romantic-400"></i>
+                    </div>
+                </div>
+
+                <!-- Note 2 -->
+                <div class="sticky-note bg-emerald-50 rounded-2xl p-6 shadow-md border-2 border-matcha-200 transform rotate-1 relative overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-emerald-400/20 absolute -top-3 left-1/2 -translate-x-1/2 flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-matcha-500"></div>
+                    </div>
+                    <div class="text-right text-xs font-bold text-matcha-600 mb-1">Oct 11 • Note #2</div>
+                    <p class="font-handwriting text-2xl text-coffee-700 font-bold leading-snug">"I like you a latte. Every single day since Oct 11!"</p>
+                    <div class="mt-4 flex justify-between items-center text-xs font-bold text-coffee-500">
+                        <span>☕ Espresso Strong</span>
+                        <i class="fa-solid fa-heart text-romantic-400"></i>
+                    </div>
+                </div>
+
+                <!-- Note 3 -->
+                <div class="sticky-note bg-rose-50 rounded-2xl p-6 shadow-md border-2 border-romantic-200 transform -rotate-1 relative overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-rose-400/20 absolute -top-3 left-1/2 -translate-x-1/2 flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-romantic-400"></div>
+                    </div>
+                    <div class="text-right text-xs font-bold text-romantic-400 mb-1">Oct 11 • Note #3</div>
+                    <p class="font-handwriting text-2xl text-coffee-700 font-bold leading-snug">"We're a brew-tiful match, Hon. No cup in the world compares to us."</p>
+                    <div class="mt-4 flex justify-between items-center text-xs font-bold text-romantic-400">
+                        <span>✨ Match Made in Heaven</span>
+                        <i class="fa-solid fa-heart"></i>
+                    </div>
+                </div>
+
+                <!-- Note 4 -->
+                <div class="sticky-note bg-orange-50 rounded-2xl p-6 shadow-md border-2 border-orange-200 transform rotate-2 relative overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-orange-400/20 absolute -top-3 left-1/2 -translate-x-1/2 flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-orange-400"></div>
+                    </div>
+                    <div class="text-right text-xs font-bold text-orange-400 mb-1">Oct 11 • Note #4</div>
+                    <p class="font-handwriting text-2xl text-coffee-700 font-bold leading-snug">"Life with you is my absolute favorite daily ritual."</p>
+                    <div class="mt-4 flex justify-between items-center text-xs font-bold text-orange-500">
+                        <span>🥰 Best Part of My Day</span>
+                        <i class="fa-solid fa-heart text-romantic-400"></i>
+                    </div>
+                </div>
+
+                <!-- Note 5 -->
+                <div class="sticky-note bg-lime-50 rounded-2xl p-6 shadow-md border-2 border-lime-200 transform -rotate-2 relative overflow-hidden">
+                    <div class="w-8 h-8 rounded-full bg-lime-400/20 absolute -top-3 left-1/2 -translate-x-1/2 flex items-center justify-center">
+                        <div class="w-3 h-3 rounded-full bg-lime-500"></div>
+                    </div>
+                    <div class="text-right text-xs font-bold text-matcha-600 mb-1">Oct 11 • Note #5</div>
+                    <p class="font-handwriting text-2xl text-coffee-700 font-bold leading-snug">"Oct 11 was the best day ever — coffee and matcha couldn't even compare!"</p>
+                    <div class="mt-4 flex justify-between items-center text-xs font-bold text-matcha-500">
+                        <span>🗓️ Best Anniversary</span>
+                        <i class="fa-solid fa-heart text-romantic-400"></i>
+                    </div>
+                </div>
+
+                <!-- Note 6: Interactive Love Quote Dispenser Button -->
+                <div class="bg-gradient-to-br from-matcha-400 to-coffee-600 rounded-2xl p-6 shadow-md text-white flex flex-col justify-between items-center text-center transform hover:scale-[1.02] transition-all">
+                    <div>
+                        <div class="text-xs uppercase font-bold tracking-widest text-matcha-100 mb-1">Interactive Dispenser</div>
+                        <h3 class="text-xl font-extrabold font-heading mb-2">Need More Love Quotes buseng??</h3>
+                        <p class="text-xs text-matcha-100 mb-4">Click below to generate an instant cute quote brewed exclusively for you!</p>
+                    </div>
+                    <button onclick="dispenseQuote()" class="w-full py-3 bg-white text-coffee-700 hover:bg-matcha-50 font-bold rounded-xl text-sm shadow transition-colors cursor-pointer flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-matcha-500"></i> Dispense Love Quote
+                    </button>
+                </div>
+            </div>
+
+            <!-- Random Quote Output Box (Hidden initially until requested) -->
+            <div id="dispenserBox" class="hidden glass-card p-6 rounded-2xl border-2 border-matcha-300 text-center shadow-lg animate-fade-in max-w-xl mx-auto">
+                <div class="text-xs font-bold text-matcha-600 uppercase tracking-widest mb-1">✨ Freshly Brewed Quote for you ✨</div>
+                <p id="dispenserText" class="font-handwriting text-3xl text-coffee-700 font-bold my-2">"You are my favorite person to get coffee and matcha with forever!"</p>
+                <div class="text-xs text-gray-500 italic">— Verified by Oct 11 High Court</div>
+            </div>
+        </section>
+
+        <!-- Section 2: "The Evidence" / Reasons You're Stuck With Me -->
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl sm:text-3xl font-bold font-heading text-coffee-700">
+                    <i class="fa-solid fa-folder-open text-matcha-500 mr-2"></i>Exhibits: Why Apple is Stuck With Me
+                </h2>
+                <p class="text-sm sm:text-base text-gray-600">Tap or click each card to uncover why Apple is officially stuck with me forever!</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Card 1 -->
+                <div class="flip-card h-48 cursor-pointer perspective-1000" onclick="flipCard(this)">
+                    <div class="flip-card-inner relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl">
+                        <!-- Front -->
+                        <div class="absolute w-full h-full bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden border-2 border-matcha-100">
+                            <span class="text-4xl mb-3">🗓️</span>
+                            <h3 class="font-bold text-lg text-coffee-700">October 11th</h3>
+                            <p class="text-xs text-matcha-500 font-bold mt-2">Tap to flip <i class="fa-solid fa-rotate mr-1"></i></p>
+                        </div>
+                        <!-- Back -->
+                        <div class="absolute w-full h-full bg-gradient-to-br from-matcha-500 to-matcha-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180">
+                            <p class="text-sm font-semibold">The official day my life got 1000x brighter. October 11th will always be our unbeatable anniversary!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="flip-card h-48 cursor-pointer perspective-1000" onclick="flipCard(this)">
+                    <div class="flip-card-inner relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl">
+                        <!-- Front -->
+                        <div class="absolute w-full h-full bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden border-2 border-matcha-100">
+                            <span class="text-4xl mb-3">🍵</span>
+                            <h3 class="font-bold text-lg text-coffee-700">Matcha Twin</h3>
+                            <p class="text-xs text-matcha-500 font-bold mt-2">Tap to flip <i class="fa-solid fa-rotate mr-1"></i></p>
+                        </div>
+                        <!-- Back -->
+                        <div class="absolute w-full h-full bg-gradient-to-br from-matcha-500 to-matcha-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180">
+                            <p class="text-sm font-semibold">I will gladly buy you every iced matcha latte in town just to see that adorable happy smile on your face!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="flip-card h-48 cursor-pointer perspective-1000" onclick="flipCard(this)">
+                    <div class="flip-card-inner relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl">
+                        <!-- Front -->
+                        <div class="absolute w-full h-full bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden border-2 border-matcha-100">
+                            <span class="text-4xl mb-3">☕</span>
+                            <h3 class="font-bold text-lg text-coffee-700">Coffee Dates</h3>
+                            <p class="text-xs text-matcha-500 font-bold mt-2">Tap to flip <i class="fa-solid fa-rotate mr-1"></i></p>
+                        </div>
+                        <!-- Back -->
+                        <div class="absolute w-full h-full bg-gradient-to-br from-coffee-500 to-coffee-700 text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180">
+                            <p class="text-sm font-semibold">Coffee tastes 100x better when I'm sitting across the table staring at you, Hon.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="flip-card h-48 cursor-pointer perspective-1000" onclick="flipCard(this)">
+                    <div class="flip-card-inner relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl">
+                        <!-- Front -->
+                        <div class="absolute w-full h-full bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden border-2 border-matcha-100">
+                            <span class="text-4xl mb-3">🥰</span>
+                            <h3 class="font-bold text-lg text-coffee-700">Unmatched Cuteness</h3>
+                            <p class="text-xs text-matcha-500 font-bold mt-2">Tap to flip <i class="fa-solid fa-rotate mr-1"></i></p>
+                        </div>
+                        <!-- Back -->
+                        <div class="absolute w-full h-full bg-gradient-to-br from-matcha-500 to-matcha-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180">
+                            <p class="text-sm font-semibold">Scientifically proven: Apple is 100% irresistibly beautiful, especially when laughing or sipping drinks!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="flip-card h-48 cursor-pointer perspective-1000" onclick="flipCard(this)">
+                    <div class="flip-card-inner relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl">
+                        <!-- Front -->
+                        <div class="absolute w-full h-full bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden border-2 border-matcha-100">
+                            <span class="text-4xl mb-3">🍕</span>
+                            <h3 class="font-bold text-lg text-coffee-700">Food Telepathy</h3>
+                            <p class="text-xs text-matcha-500 font-bold mt-2">Tap to flip <i class="fa-solid fa-rotate mr-1"></i></p>
+                        </div>
+                        <!-- Back -->
+                        <div class="absolute w-full h-full bg-gradient-to-br from-coffee-500 to-coffee-700 text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180">
+                            <p class="text-sm font-semibold">We share 99% of our brain cells when deciding what to eat after our coffee & matcha runs.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="flip-card h-48 cursor-pointer perspective-1000" onclick="flipCard(this)">
+                    <div class="flip-card-inner relative w-full h-full duration-500 transform-style-3d shadow-lg rounded-2xl">
+                        <!-- Front -->
+                        <div class="absolute w-full h-full bg-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden border-2 border-matcha-100">
+                            <span class="text-4xl mb-3">🔒</span>
+                            <h3 class="font-bold text-lg text-coffee-700">No Return Policy</h3>
+                            <p class="text-xs text-matcha-500 font-bold mt-2">Tap to flip <i class="fa-solid fa-rotate mr-1"></i></p>
+                        </div>
+                        <!-- Back -->
+                        <div class="absolute w-full h-full bg-gradient-to-br from-matcha-500 to-matcha-600 text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center backface-hidden rotate-y-180">
+                            <p class="text-sm font-semibold">The warranty on my heart expired on Oct 11. You are officially stuck with me forever, Bleh!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Interactive Love Meter / Cheesy Score Calculator -->
+        <section class="glass-card rounded-3xl p-6 sm:p-8 shadow-xl mb-12 border-2 border-matcha-200">
+            <div class="text-center mb-6">
+                <h2 class="text-2xl sm:text-3xl font-bold font-heading text-coffee-700">
+                    <i class="fa-solid fa-gauge-high text-matcha-500 mr-2"></i>Official Love Meter for Hon
+                </h2>
+                <p class="text-sm text-gray-600">Slide to measure how hopelessly obsessed I am with you!:</p>
+            </div>
+
+            <div class="max-w-xl mx-auto">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold text-gray-500">1 Cup of Coffee</span>
+                    <span id="meterPercent" class="text-2xl font-bold font-heading text-matcha-600">500 Cups</span>
+                    <span class="text-sm font-bold text-matcha-600">MAX MATCHA OVERLOAD! 🔥</span>
+                </div>
+
+                <input type="range" id="loveMeter" min="0" max="1000" value="500" 
+                    class="w-full h-4 bg-matcha-100 rounded-lg appearance-none cursor-pointer accent-matcha-500 transition-all"
+                    oninput="updateLoveMeter(this.value)">
+
+                <!-- Dynamic Commentary Box -->
+                <div id="commentaryBox" class="mt-6 p-4 rounded-2xl bg-white/80 border border-matcha-200 text-center transition-all duration-300 shadow-sm">
+                    <p id="meterText" class="text-lg font-bold text-coffee-700">"Sweet matcha levels for you..."</p>
+                    <p id="meterSubtext" class="text-sm text-gray-600 mt-1">Keep sliding right to test system limits!</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Official Coupons / Redeemable Tokens -->
+        <section class="mb-12">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl sm:text-3xl font-bold font-heading text-coffee-700">
+                    <i class="fa-solid fa-ticket text-matcha-500 mr-2"></i>Official Coupons Issued Exclusively to Apple
+                </h2>
+                <p class="text-sm text-gray-600">Click to redeem! (Valid anytime for Hon only)</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <!-- Coupon 1 -->
+                <div class="bg-white rounded-2xl p-5 border-2 border-dashed border-matcha-300 shadow-md hover:shadow-lg transition-all relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute -right-6 -top-6 w-12 h-12 bg-matcha-100 rounded-full"></div>
+                    <div>
+                        <div class="text-matcha-600 font-bold text-xs uppercase tracking-wider mb-1">Issued to: Apple • Voucher #001</div>
+                        <h3 class="font-bold text-lg text-coffee-700 mb-2">🍵 Emergency Matcha Run</h3>
+                        <p class="text-xs text-gray-600 mb-4">Valid for one instant matcha latte delivered straight to you, no questions asked!</p>
+                    </div>
+                    <button onclick="redeemCoupon(this, 'Emergency Matcha Run')" class="w-full py-2 bg-matcha-100 hover:bg-matcha-200 text-matcha-700 font-bold rounded-xl text-sm transition-colors cursor-pointer">
+                        Redeem Voucher
+                    </button>
+                </div>
+
+                <!-- Coupon 2 -->
+                <div class="bg-white rounded-2xl p-5 border-2 border-dashed border-coffee-300 shadow-md hover:shadow-lg transition-all relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute -right-6 -top-6 w-12 h-12 bg-coffee-100 rounded-full"></div>
+                    <div>
+                        <div class="text-coffee-600 font-bold text-xs uppercase tracking-wider mb-1">Issued to: Hon • Voucher #002</div>
+                        <h3 class="font-bold text-lg text-coffee-700 mb-2">☕ Coffee & Cake Date</h3>
+                        <p class="text-xs text-gray-600 mb-4">I'll treat you to a cozy coffee date at your absolute favorite cafe spot!</p>
+                    </div>
+                    <button onclick="redeemCoupon(this, 'Coffee & Cake Date')" class="w-full py-2 bg-coffee-100 hover:bg-coffee-200 text-coffee-700 font-bold rounded-xl text-sm transition-colors cursor-pointer">
+                        Redeem Voucher
+                    </button>
+                </div>
+
+                <!-- Coupon 3 -->
+                <div class="bg-white rounded-2xl p-5 border-2 border-dashed border-romantic-300 shadow-md hover:shadow-lg transition-all relative overflow-hidden flex flex-col justify-between">
+                    <div class="absolute -right-6 -top-6 w-12 h-12 bg-romantic-100 rounded-full"></div>
+                    <div>
+                        <div class="text-romantic-400 font-bold text-xs uppercase tracking-wider mb-1">Issued to: Hon • Voucher #003</div>
+                        <h3 class="font-bold text-lg text-coffee-700 mb-2">💆 Oct 11 Relax Massage</h3>
+                        <p class="text-xs text-gray-600 mb-4">Entitles you to a relaxing 20-minute shoulder and back massage anytime!</p>
+                    </div>
+                    <button onclick="redeemCoupon(this, 'Oct 11 Relax Massage')" class="w-full py-2 bg-romantic-100 hover:bg-romantic-200 text-romantic-400 font-bold rounded-xl text-sm transition-colors cursor-pointer">
+                        Redeem Voucher
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="text-center text-xs text-coffee-500 pt-6 border-t border-matcha-200">
+            <p>Made specially for you with ❤️, iced matcha, coffee, and endless affection.</p>
+            <p class="mt-1">Signed & Sealed for Hon • Celebrating October 11 Forever • OCT11-FOREVER</p>
+        </footer>
+    </div>
+
+    <!-- Celebration Modal Overlay -->
+    <div id="loveModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl transform scale-90 transition-all duration-300 relative border-4 border-matcha-300 text-center">
+            
+            <!-- Confetti Icon / Decoration -->
+            <div class="w-20 h-20 bg-matcha-100 text-matcha-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">
+                🍵💖
+            </div>
+
+            <div class="stamp absolute top-6 right-6 px-3 py-1 bg-matcha-100 text-matcha-600 text-xs font-black rounded uppercase tracking-widest hidden sm:block">
+                OFFICIALLY APPROVED
+            </div>
+
+            <h3 class="text-2xl sm:text-3xl font-extrabold font-heading text-coffee-700 mb-2">
+                IT'S OFFICIAL! YOU SAID YES HON! 🎉
+            </h3>
+            <p class="text-matcha-600 font-bold mb-4">Case #OCT11 Closed: You & Me Forever!</p>
+
+            <div class="bg-matcha-50 rounded-2xl p-5 text-left mb-6 border border-matcha-100 text-coffee-700 space-y-3 text-sm sm:text-base">
+                <p><strong>Dearest Hon,</strong></p>
+                <p>Thank you for choosing YES (not like you had much choice with that running button anyway 😉)!</p>
+                <p>Ever since October 11, you make every single day brighter, sweeter, and infinitely better than the best matcha latte or cup of coffee in the world.</p>
+                <p>I promise to keep making you smile, getting you your favorite drinks, and loving you unconditionally forever.</p>
+                <p class="text-right font-bold text-matcha-600 pt-2">— Yours Forever ❤️</p>
+            </div>
+
+            <button onclick="closeModal()" class="w-full bg-gradient-to-r from-matcha-500 to-coffee-600 hover:from-matcha-600 hover:to-coffee-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all cursor-pointer">
+                Seal with Coffee & Matcha 🍵☕
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Quotes List for Dispenser
+        const loveQuotes = [
+            "\"You're the matcha to my morning, Hon!\"",
+            "\"I like you a latte. Every single day since Oct 11!\"",
+            "\"We're a brew-tiful match, Hon.\"",
+            "\"Life with you is my absolute favorite daily ritual.\"",
+            "\"Oct 11 was the best day ever — coffee and matcha couldn't even compare!\"",
+            "\"My love for Hon is hotter than fresh espresso and sweeter than iced matcha!\"",
+            "\"You are my favorite person to get coffee and matcha with forever!\"",
+            "\"Oct 11 declared it official: Hon is stuck with me for life! 💕\""
+        ];
+
+        // Sound synth initialized on first user interaction
+        let synth = null;
+
+        function initSynth() {
+            if (!synth && window.Tone) {
+                synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                synth.volume.value = -8;
+            }
+        }
+
+        // Play Sound Effect
+        function playTone(type) {
+            try {
+                initSynth();
+                if (!synth) return;
+
+                if (type === 'dodge') {
+                    synth.triggerAttackRelease("C5", "8n");
+                } else if (type === 'flip') {
+                    synth.triggerAttackRelease("E5", "16n");
+                } else if (type === 'victory') {
+                    const now = Tone.now();
+                    synth.triggerAttackRelease("C4", "8n", now);
+                    synth.triggerAttackRelease("E4", "8n", now + 0.1);
+                    synth.triggerAttackRelease("G4", "8n", now + 0.2);
+                    synth.triggerAttackRelease("C5", "4n", now + 0.3);
+                } else if (type === 'redeem') {
+                    synth.triggerAttackRelease("G5", "16n");
+                } else if (type === 'dispense') {
+                    synth.triggerAttackRelease("A4", "16n");
+                }
+            } catch (e) {
+                console.log("Audio play blocked or error:", e);
+            }
+        }
+
+        // Generate Floating Background Items (Coffee, Matcha, Hearts, Oct 11)
+        function createBackgroundFloats() {
+            const container = document.getElementById('floatContainer');
+            const items = ['🍵', '☕', '❤️', '💕', '🗓️', '✨', '🌸'];
+            for (let i = 0; i < 25; i++) {
+                const floatEl = document.createElement('div');
+                floatEl.className = 'bg-float-item';
+                floatEl.innerText = items[Math.floor(Math.random() * items.length)];
+                floatEl.style.left = Math.random() * 100 + 'vw';
+                floatEl.style.animationDuration = (Math.random() * 5 + 6) + 's';
+                floatEl.style.animationDelay = Math.random() * 5 + 's';
+                floatEl.style.fontSize = (Math.random() * 20 + 16) + 'px';
+                container.appendChild(floatEl);
+            }
+        }
+
+        // Dodging 'No' Button Logic
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+        const dodgeHint = document.getElementById('dodgeHint');
+        let dodgeCount = 0;
+        let yesScale = 1;
+
+        const dodgeTexts = [
+            "Are you sure Hon? 🍵",
+            "Oct 11 says YES!",
+            "Think about the matcha!",
+            "Nice try Hon! 😜",
+            "1000% YES Hon!"
+        ];
+
+        function moveNoButton() {
+            playTone('dodge');
+            dodgeCount++;
+
+            // Reveal hint after dodges
+            if (dodgeCount >= 2) {
+                dodgeHint.classList.remove('opacity-0');
+            }
+
+            // Change Yes button text progressively
+            if (dodgeCount <= dodgeTexts.length) {
+                yesBtn.querySelector('span').innerText = `Yes, Absolutely Hon! (${dodgeTexts[dodgeCount - 1]}) 💖`;
+            }
+
+            // Make YES button grow bigger each time NO is attempted!
+            yesScale += 0.15;
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            const btnArea = document.getElementById('buttonArea');
+            const rect = btnArea.getBoundingClientRect();
+
+            // Calculate random new position within safe boundary
+            const maxX = Math.min(window.innerWidth - 180, rect.width + 100);
+            const maxY = 120;
+
+            const randomX = (Math.random() - 0.5) * maxX;
+            const randomY = (Math.random() - 0.5) * maxY;
+
+            noBtn.style.position = 'relative';
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        }
+
+        // Event listeners for No Button dodging (Hover & Touch)
+        noBtn.addEventListener('mouseenter', moveNoButton);
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            moveNoButton();
+        });
+
+        // Handle YES button click
+        function handleYesClick() {
+            playTone('victory');
+
+            // Trigger Fireworks / Confetti
+            if (window.confetti) {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 80,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 }
+                    });
+                    confetti({
+                        particleCount: 80,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 }
+                    });
+                }, 250);
+            }
+
+            // Show Love Letter Modal
+            const modal = document.getElementById('loveModal');
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.querySelector('div').classList.remove('scale-90');
+            modal.querySelector('div').classList.add('scale-100');
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('loveModal');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+        }
+
+        // Card Flip Function
+        function flipCard(cardElement) {
+            playTone('flip');
+            const inner = cardElement.querySelector('.flip-card-inner');
+            inner.classList.toggle('rotate-y-180');
+        }
+
+        // Dispense Quote Function
+        function dispenseQuote() {
+            playTone('dispense');
+            const dispenserBox = document.getElementById('dispenserBox');
+            const dispenserText = document.getElementById('dispenserText');
+            
+            const randomQuote = loveQuotes[Math.floor(Math.random() * loveQuotes.length)];
+            dispenserText.innerText = randomQuote;
+            
+            dispenserBox.classList.remove('hidden');
+            dispenserBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            if (window.confetti) {
+                confetti({ particleCount: 20, spread: 40, origin: { y: 0.7 } });
+            }
+        }
+
+        // Love Meter Logic
+        function updateLoveMeter(val) {
+            const meterPercent = document.getElementById('meterPercent');
+            const meterText = document.getElementById('meterText');
+            const meterSubtext = document.getElementById('meterSubtext');
+
+            meterPercent.innerText = val + ' Cups';
+
+            if (val < 200) {
+                meterText.innerText = "☕ Warm Coffee Stage for Hon...";
+                meterSubtext.innerText = "Just warming up the affection engines!";
+            } else if (val < 500) {
+                meterText.innerText = "🍵 Sweet Matcha Feelings for Hon!";
+                meterSubtext.innerText = "Definitely crushing hard since Oct 11!";
+            } else if (val < 800) {
+                meterText.innerText = "🔥 Hopelessly Obsessed with Hon!";
+                meterSubtext.innerText = "Warning: Exceeding safe caffeine & romance limits!";
+            } else if (val < 1000) {
+                meterText.innerText = "🚨 DANGER: SYSTEM OVERHEAT FOR HON!";
+                meterSubtext.innerText = "Heart rate reaching critical levels!";
+            } else {
+                meterText.innerText = "👑 1000% INFINITE MATCHA & COFFEE OVERLOAD!";
+                meterSubtext.innerText = "Calculators broke! My love for Hon is officially infinite! 💕🍵✨";
+                
+                if (window.confetti) {
+                    confetti({ particleCount: 30, spread: 50, origin: { y: 0.7 } });
+                }
+            }
+        }
+
+        // Redeem Coupon Logic
+        function redeemCoupon(btn, title) {
+            playTone('redeem');
+            btn.disabled = true;
+            btn.classList.remove('bg-matcha-100', 'bg-coffee-100', 'bg-romantic-100', 'hover:bg-matcha-200');
+            btn.classList.add('bg-green-100', 'text-green-700');
+            btn.innerHTML = `<i class="fa-solid fa-check mr-1"></i> Redeemed by Hon!`;
+
+            if (window.confetti) {
+                confetti({
+                    particleCount: 25,
+                    spread: 40,
+                    origin: { y: 0.8 }
+                });
+            }
+        }
+
+        // Initialize background on window load
+        window.onload = function() {
+            createBackgroundFloats();
+        };
+    </script>
+</body>
+</html>
